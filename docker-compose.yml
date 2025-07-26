@@ -1,0 +1,67 @@
+version: "3.9"
+
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - micro_net
+
+  postgres_ingest:
+    image: postgres:15
+    container_name: postgres_ingest
+    environment:
+      POSTGRES_USER: ingest_user
+      POSTGRES_PASSWORD: ingest_pass
+      POSTGRES_DB: ingest_db
+    ports:
+      - "5433:5432"
+    networks:
+      - micro_net
+
+  postgres_distrib:
+    image: postgres:15
+    container_name: postgres_distrib
+    environment:
+      POSTGRES_USER: distrib_user
+      POSTGRES_PASSWORD: distrib_pass
+      POSTGRES_DB: distrib_db
+    ports:
+      - "5434:5432"
+    networks:
+      - micro_net
+
+  fastapi_ingest:
+    build: ./microservico_ingestao
+    container_name: fastapi_ingest
+    environment:
+      DATABASE_URL: postgresql+psycopg2://ingest_user:ingest_pass@postgres_ingest:5432/ingest_db
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672//
+    depends_on:
+      - postgres_ingest
+      - rabbitmq
+    ports:
+      - "8001:8000"
+    networks:
+      - micro_net
+
+  django_distrib:
+    build: ./microservico_distribuicao
+    container_name: django_distrib
+    environment:
+      DATABASE_URL: postgresql://distrib_user:distrib_pass@postgres_distrib:5432/distrib_db
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672//
+    depends_on:
+      - postgres_distrib
+      - rabbitmq
+    ports:
+      - "8002:8000"
+    networks:
+      - micro_net
+
+networks:
+  micro_net:
+    driver: bridge

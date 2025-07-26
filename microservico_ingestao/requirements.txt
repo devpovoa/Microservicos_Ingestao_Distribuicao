@@ -1,0 +1,9 @@
+fastapi
+uvicorn[standard]
+python-jose[cryptography]  # JWT
+pydantic
+sqlalchemy
+psycopg2-binary
+pandas
+watchdog
+celery
