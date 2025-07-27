@@ -9,7 +9,16 @@ class Settings(BaseSettings):
     
     # Configurações do watcher
     scan_interval: int = 3
-    processed_limit: int = 50
+    processed_limit: int = 2
+
+    # JWT / autenticação
+    secret_key: str = "changeme"             
+    algorithm: str = "HS256"                 
+    access_token_expire_minutes: int = 30    
+
+    # Credenciais de login do admin
+    admin_user: str = "admin"
+    admin_password: str = "admin123"
 
     class Config:
         env_file = ".env"

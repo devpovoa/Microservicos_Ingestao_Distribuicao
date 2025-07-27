@@ -37,6 +37,8 @@ services:
   fastapi_ingest:
     build: ./microservico_ingestao
     container_name: fastapi_ingest
+    env_file:
+      - .env
     environment:
       DATABASE_URL: postgresql+psycopg2://ingest_user:ingest_pass@postgres_ingest:5432/ingest_db
       RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672//

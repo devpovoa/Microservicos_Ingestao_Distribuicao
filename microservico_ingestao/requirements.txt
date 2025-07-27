@@ -7,3 +7,4 @@ psycopg2-binary
 pandas
 celery
 openpyxl
+python-multipart
