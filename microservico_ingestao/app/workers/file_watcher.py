@@ -79,7 +79,7 @@ def process_excel(file_path: str):
                         quantidade=quantidade,
                         valor_unitario=valor_unitario,
                         valor_total=quantidade * valor_unitario,
-                        data_hora=pd.to_datetime(row["data_hora"]),
+                        data_hora=datetime.now(),
                         forma_pagamento=str(row["forma_pagamento"]).strip()
                     )
                     db.add(compra)

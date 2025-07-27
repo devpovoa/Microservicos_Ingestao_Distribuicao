@@ -31,3 +31,20 @@ class CompraResponse(BaseModel):
     
     class Config:
         from_attributes = True
+        
+class ClienteCreate(BaseModel):
+    nome : str
+    email: str | None = None
+    telefone: str | None = None
+    cpf_cnpj: str | None = None
+    endereco_completo: str| None = None
+
+class ProdutoCreate(BaseModel):
+    nome_produto: str
+    
+class CompraCreate(BaseModel):
+    cliente: ClienteCreate
+    produto: ProdutoCreate
+    quantidade: int
+    valor_unitario: float
+    forma_pagamento: str

@@ -1,3 +1,4 @@
+from datetime import datetime
 import threading
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, Depends, Form, HTTPException
@@ -7,7 +8,7 @@ from app.workers.file_watcher import start_file_watcher
 from typing import List
 from sqlalchemy.orm import Session
 from app.models.temp_models import ClienteTemp, ProdutoTemp, CompraTemp
-from app.api.schemas import ClienteResponse, ProdutoResponse, CompraResponse
+from app.api.schemas import ClienteResponse, ProdutoResponse, CompraResponse, CompraCreate
 from app.core.security import verify_token, create_access_token
 from app.core.config import settings
 
@@ -75,3 +76,41 @@ def listar_produtos(user=Depends(verify_token), db: Session = Depends(get_db)):
 def listar_compras(user=Depends(verify_token), db: Session = Depends(get_db)):
     compras = db.query(CompraTemp).all()
     return compras
+
+@app.post("/compras", response_model=CompraCreate, summary="Criar uma venda via API")
+def criar_compra(compra_data: CompraCreate, user=Depends(verify_token), db: Session = Depends(get_db)):
+    
+    data_hora = datetime.now()
+    cliente = None
+    if compra_data.cliente.cpf_cnpj:
+        cliente = db.query(ClienteTemp).filter_by(cpf_cnpj=compra_data.cliente.cpf_cnpj).first()
+    if not cliente:
+        cliente = db.query(ClienteTemp).filter_by(nome=compra_data.cliente.nome).first()
+    if not cliente:
+        cliente = ClienteTemp(**compra_data.cliente.dict()) 
+        db.add(cliente)
+        db.commit()
+        db.refresh(cliente)
+    
+    produto = db.query(ProdutoTemp).filter_by(nome_produto=compra_data.produto.nome_produto).first()
+    if not produto:
+        produto = ProdutoTemp(nome_produto=compra_data.produto.nome_produto)
+        db.add(produto)
+        db.commit()
+        db.refresh(produto)
+        
+    valor_total = compra_data.quantidade * compra_data.valor_unitario
+    compra = CompraTemp(
+        cliente_id = cliente.id,
+        produto_id = produto.id,
+        quantidade = compra_data.quantidade,
+        valor_unitario = compra_data.valor_unitario,
+        valor_total = valor_total,
+        data_hora = data_hora,
+        forma_pagamento = compra_data.forma_pagamento
+    )
+    db.add(compra)
+    db.commit()
+    db.refresh(compra)
+    
+    return compra

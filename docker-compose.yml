@@ -40,6 +40,7 @@ services:
     env_file:
       - .env
     environment:
+      TZ: America/Sao_Paulo
       DATABASE_URL: postgresql+psycopg2://ingest_user:ingest_pass@postgres_ingest:5432/ingest_db
       RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672//
     volumes:
