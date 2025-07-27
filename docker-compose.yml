@@ -4,6 +4,9 @@ services:
   rabbitmq:
     image: rabbitmq:3-management
     container_name: rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASS}
     ports:
       - "5672:5672"
       - "15672:15672"
@@ -42,7 +45,7 @@ services:
     environment:
       TZ: America/Sao_Paulo
       DATABASE_URL: postgresql+psycopg2://ingest_user:ingest_pass@postgres_ingest:5432/ingest_db
-      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672//
+      RABBITMQ_URL: ${RABBITMQ_URL}
     volumes:
       - ./microservico_ingestao/data:/app/data
     depends_on:
@@ -52,13 +55,30 @@ services:
       - "8001:8000"
     networks:
       - micro_net
+  
+  celery_worker_ingest:
+    build: ./microservico_ingestao
+    container_name: celery_worker_ingest
+    env_file:
+      - .env
+    environment:
+      TZ: America/Sao_Paulo
+      DATABASE_URL: postgresql+psycopg2://ingest_user:ingest_pass@postgres_ingest:5432/ingest_db
+      RABBITMQ_URL: ${RABBITMQ_URL}
+    command: celery -A app.core.celery_app.celery_app worker --loglevel=INFO
+    depends_on:
+      - rabbitmq
+      - fastapi_ingest
+    networks:
+      - micro_net
+
 
   django_distrib:
     build: ./microservico_distribuicao
     container_name: django_distrib
     environment:
       DATABASE_URL: postgresql://distrib_user:distrib_pass@postgres_distrib:5432/distrib_db
-      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672//
+      RABBITMQ_URL: ${RABBITMQ_URL}
     depends_on:
       - postgres_distrib
       - rabbitmq

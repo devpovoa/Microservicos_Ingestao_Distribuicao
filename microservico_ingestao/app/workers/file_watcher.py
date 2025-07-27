@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 from app.core.database import SessionLocal
 from app.core.config import settings
 from app.models.temp_models import ClienteTemp, ProdutoTemp, CompraTemp
+from app.tasks.publisher import send_to_queue
 
 DATA_PATH = "/app/data"
 PROCESSED_PATH = os.path.join(DATA_PATH, "processed")
@@ -28,7 +29,7 @@ def process_excel(file_path: str):
         required_cols = {
             "nome", "email", "telefone", "endereco_completo", 
             "cpf_cnpj", "produto", "quantidade", 
-            "valor_unitario", "data_hora", "forma_pagamento"
+            "valor_unitario", "forma_pagamento"
         }
         if not required_cols.issubset(df.columns):
             print(f"[ERRO] Arquivo {file_path} inválido. Colunas obrigatórias faltando!", flush=True)
@@ -82,9 +83,53 @@ def process_excel(file_path: str):
                         data_hora=datetime.now(),
                         forma_pagamento=str(row["forma_pagamento"]).strip()
                     )
-                    db.add(compra)
+                    db.add(compra)  
+            print(f"[OK] Vendas importadas de {file_path}", flush=True)
+        
+            # Buscar os dados já persistidos no banco TEMP
+            clientes = db.query(ClienteTemp).all()
+            produtos = db.query(ProdutoTemp).all()
+            compras = db.query(CompraTemp).all()
 
-        print(f"[OK] Vendas importadas de {file_path}", flush=True)
+            # Montar payload com dados tratados
+            payload = {
+                "clientes": [
+                    {
+                        "id": c.id,
+                        "nome": c.nome,
+                        "email": c.email,
+                        "telefone": c.telefone,
+                        "cpf_cnpj": c.cpf_cnpj,
+                        "endereco_completo": c.endereco_completo,
+                    }
+                    for c in clientes
+                ],
+                "produtos": [
+                    {
+                        "id": p.id,
+                        "nome_produto": p.nome_produto,
+                    }
+                    for p in produtos
+                ],
+                "compras": [
+                    {
+                        "id": cp.id,
+                        "cliente_id": cp.cliente_id,
+                        "produto_id": cp.produto_id,
+                        "quantidade": cp.quantidade,
+                        "valor_unitario": cp.valor_unitario,
+                        "valor_total": cp.valor_total,
+                        "data_hora": cp.data_hora.isoformat(),
+                        "forma_pagamento": cp.forma_pagamento,
+                    }
+                    for cp in compras
+                ],
+            }
+
+        # Enviar para RabbitMQ via Celery
+        send_to_queue.delay(payload)
+        print("[INFO] Payload normalizado enviado para RabbitMQ", flush=True)
+             
 
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         dest_path = os.path.join(PROCESSED_PATH, f"{os.path.splitext(os.path.basename(file_path))[0]}_{timestamp}.xlsx")
