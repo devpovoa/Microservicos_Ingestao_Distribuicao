@@ -5,5 +5,5 @@ pydantic-settings
 sqlalchemy
 psycopg2-binary
 pandas
-watchdog
 celery
+openpyxl
