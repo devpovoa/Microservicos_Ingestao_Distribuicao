@@ -1,16 +1,17 @@
 from pydantic import BaseModel
 from datetime import datetime
 
+# Saída da API
 class ClienteResponse(BaseModel):
     id : int
     nome : str
-    email: str | None
-    telefone: str | None
-    cpf_cnpj: str | None
-    endereco_completo: str| None
+    email: str | None = None
+    telefone: str | None = None
+    cpf_cnpj: str | None = None
+    endereco_completo: str| None = None
     
     class Config:
-        from_attributes = True # Permite retorna direto de SQLAlchemy
+        from_attributes = True # Permite converter diretamente de modelos SQLAlchemy
 
 class ProdutoResponse(BaseModel):
     id : int
@@ -32,6 +33,7 @@ class CompraResponse(BaseModel):
     class Config:
         from_attributes = True
         
+# Entradas da API
 class ClienteCreate(BaseModel):
     nome : str
     email: str | None = None
