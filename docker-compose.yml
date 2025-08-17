@@ -74,14 +74,17 @@ services:
   django_distrib:
     build: ./microservico_distribuicao
     container_name: django_distrib
+    env_file:
+      - .env
     environment:
-      DATABASE_URL: postgresql://distrib_user:distrib_pass@postgres_distrib:5432/distrib_db
-      RABBITMQ_URL: ${RABBITMQ_URL}
+      TZ: ${TZ:-America/Sao_Paulo}
     depends_on:
       - postgres_distrib
       - rabbitmq
     ports:
       - "8002:8000"
+    volumes:
+      - ./microservico_distribuicao:/app
     networks:
       - micro_net
 
