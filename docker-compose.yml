@@ -70,6 +70,22 @@ services:
     networks:
       - micro_net
 
+  celery_worker_distrib:
+    build: ./microservico_distribuicao
+    container_name: celery_worker_distrib
+    env_file:
+      - .env
+    environment:
+      TZ: ${TZ:-America/Sao_Paulo}
+    depends_on:
+      - rabbitmq
+      - postgres_distrib
+      - django_distrib
+    command: celery -A core.celery_app.celery_app worker --loglevel=INFO -Q processed_data,default
+    volumes:
+      - ./microservico_distribuicao:/app
+    networks:
+      - micro_net
 
   django_distrib:
     build: ./microservico_distribuicao
