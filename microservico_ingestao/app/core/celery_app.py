@@ -1,6 +1,5 @@
-from celery import Celery
 from app.core.config import settings
-
+from celery import Celery
 
 celery_app = Celery(
     "ingest_service",
@@ -13,9 +12,9 @@ celery_app.conf.task_routes = {
 }
 
 celery_app.conf.update(
-    task_serializer = "json",
-    accept_content = ["json"],
-    result_serializer = "json",
-    timezone = "America/Sao_Paulo",
-    enable_utc = True,
+    task_serializer="json",
+    accept_content=["json"],
+    result_serializer="json",
+    timezone="America/Sao_Paulo",
+    enable_utc=True,
 )

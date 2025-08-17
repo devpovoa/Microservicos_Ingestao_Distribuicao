@@ -2,12 +2,13 @@ import os
 import shutil
 import time
 from datetime import datetime
+
 import pandas as pd
-from sqlalchemy.orm import Session
-from app.core.database import SessionLocal
 from app.core.config import settings
-from app.models.temp_models import ClienteTemp, ProdutoTemp, CompraTemp
+from app.core.database import SessionLocal
+from app.models.temp_models import ClienteTemp, CompraTemp, ProdutoTemp
 from app.tasks.publisher import send_to_queue
+from sqlalchemy.orm import Session
 
 DATA_PATH = "/app/data"
 PROCESSED_PATH = os.path.join(DATA_PATH, "processed")
