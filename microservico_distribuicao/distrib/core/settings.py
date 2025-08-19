@@ -41,10 +41,22 @@ INSTALLED_APPS = [
 ]
 
 INSTALLED_APPS += [
+    "crispy_forms",
+    "crispy_bootstrap5",
+    "apps.dashboard",
     "apps.clientes",
     "apps.produtos",
     "apps.vendas",
 ]
+
+# Crispy (Bootstrap 5)
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+CRISPY_TEMPLATE_PACK = "bootstrap5"
+
+# Auth (onde cair após login/logout)
+LOGIN_REDIRECT_URL = "/"
+LOGOUT_REDIRECT_URL = "/accounts/login/"
+LOGIN_URL = "/accounts/login/"
 
 
 MIDDLEWARE = [
@@ -115,10 +127,8 @@ AUTH_PASSWORD_VALIDATORS = [
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-STATIC_URL = "static/"
-STATICFILES_DIR = [
-    BASE_DIR / "static",
-]
+STATIC_URL = "/static/"
+STATICFILES_DIRS = [BASE_DIR / "static"]
 
 STATIC_ROOT = BASE_DIR / "staticfiles"
 

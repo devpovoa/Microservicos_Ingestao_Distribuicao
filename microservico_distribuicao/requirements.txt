@@ -3,5 +3,6 @@ Django==5.2.5
 sqlparse==0.5.3
 python-dotenv>=1.0
 celery>=5.3
-# PostgreSQL
 psycopg2-binary>=2.9
+django-crispy-forms==2.3
+crispy-bootstrap5==2024.2

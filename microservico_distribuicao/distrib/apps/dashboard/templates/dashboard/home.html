@@ -1,0 +1,101 @@
+{% extends "base_dashboard.html" %}
+{% block title %}Dashboard · Distribuição{% endblock %}
+
+{% block content %}
+{% include "partials/_page_header.html" with title="Dashboard" subtitle="Visão geral do desempenho" %}
+
+<div class="row g-3">
+  <!-- KPIs -->
+  <div class="col-12 col-md-6 col-xl-3">
+    <div class="card-kpi p-3">
+      <div class="d-flex align-items-center justify-content-between">
+        <div>
+          <div class="kpi-label">Vendas (mês)</div>
+          <div class="kpi-value">R$ {{ kpis_mes.total|default:"0" }}</div>
+          <div class="text-secondary small">Ticket médio: R$ {{ kpis_mes.ticket|default:"0" }}</div>
+        </div>
+        <div class="kpi-icon"><i class="fa fa-coins"></i></div>
+      </div>
+    </div>
+  </div>
+  <div class="col-12 col-md-6 col-xl-3">
+    <div class="card-kpi p-3">
+      <div class="d-flex align-items-center justify-content-between">
+        <div>
+          <div class="kpi-label">Vendas (ano)</div>
+          <div class="kpi-value">R$ {{ kpis_ano.total|default:"0" }}</div>
+          <div class="text-secondary small">Qtd vendas: {{ kpis_ano.qtd|default:"0" }}</div>
+        </div>
+        <div class="kpi-icon"><i class="fa fa-calendar-days"></i></div>
+      </div>
+    </div>
+  </div>
+  <div class="col-12 col-md-6 col-xl-3">
+    <div class="card-kpi p-3">
+      <div class="d-flex align-items-center justify-content-between">
+        <div>
+          <div class="kpi-label">Ticket médio (mês)</div>
+          <div class="kpi-value">R$ {{ kpis_mes.ticket|default:"0" }}</div>
+          <div class="text-secondary small">Vendas: {{ kpis_mes.qtd|default:"0" }}</div>
+        </div>
+        <div class="kpi-icon"><i class="fa fa-receipt"></i></div>
+      </div>
+    </div>
+  </div>
+  <div class="col-12 col-md-6 col-xl-3">
+    <div class="card-kpi p-3">
+      <div class="d-flex align-items-center justify-content-between">
+        <div>
+          <div class="kpi-label">Produtos no top 5</div>
+          <div class="kpi-value">{{ top_labels|length }}</div>
+          <div class="text-secondary small">no mês corrente</div>
+        </div>
+        <div class="kpi-icon"><i class="fa fa-star"></i></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts -->
+  <div class="col-12 col-xl-8">
+    <div class="card-h p-3">
+      <h6 class="mb-2">Evolução de Vendas (12 meses)</h6>
+      <canvas id="chartLine" height="120"></canvas>
+    </div>
+  </div>
+  <div class="col-12 col-xl-4">
+    <div class="card-h p-3">
+      <h6 class="mb-2">Top Produtos (receita)</h6>
+      <canvas id="chartDonut" height="120"></canvas>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(() => {
+  const labels = {{ serie_labels|safe }};
+  const values = {{ serie_values|safe }};
+  const donutLabels = {{ top_labels|safe }};
+  const donutValues = {{ top_values|safe }};
+
+  const money = v => 'R$ ' + Number(v||0).toLocaleString('pt-BR');
+
+  new Chart(document.getElementById('chartLine').getContext('2d'), {
+    type: 'line',
+    data: { labels, datasets: [{ label:'Receita (R$)', data: values, tension:.35, fill:true }] },
+    options: {
+      plugins:{ legend:{ display:false }, tooltip:{ callbacks:{ label:ctx=> money(ctx.parsed.y) } } },
+      scales:{ y:{ beginAtZero:true, ticks:{ callback: money } } }
+    }
+  });
+
+  new Chart(document.getElementById('chartDonut').getContext('2d'), {
+    type: 'doughnut',
+    data: { labels: donutLabels, datasets: [{ data: donutValues }] },
+    options:{ plugins:{ legend:{ position:'bottom' }, tooltip:{ callbacks:{ label:ctx=> `${ctx.label}: ${money(ctx.parsed)}` } } } }
+  });
+})();
+</script>
+
+{% endblock %}

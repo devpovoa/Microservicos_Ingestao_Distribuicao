@@ -1,0 +1,205 @@
+/* Tokens (claro/escuro) */
+:root{
+  --brand-1:#0667ff; --brand-2:#2aa0ff;
+  --bg:#f6f8fb; --surface:#ffffff; --surface-2:#f3f6fa;
+  --text:#1f2937; --muted:#6b7280;
+  --border:#e5e7eb; --border-2:#dfe4ea;
+  --shadow:0 16px 40px rgba(0,0,0,.08);
+  --sidebar-w:240px;
+}
+html[data-theme="dark"]{
+  --bg:#0f172a; --surface:#0b1222; --surface-2:#0e1629;
+  --text:#e5e7eb; --muted:#94a3b8;
+  --border:#172036; --border-2:#1c2944;
+  --shadow:0 16px 40px rgba(0,0,0,.45);
+}
+
+/* Layout */
+.app-bg{
+  background:
+    radial-gradient(ellipse at 10% 10%, color-mix(in oklab, var(--brand-1) 10%, transparent), transparent 40%),
+    radial-gradient(ellipse at 90% 20%, color-mix(in oklab, var(--brand-2) 10%, transparent), transparent 45%),
+    var(--bg);
+  min-height:100vh; color:var(--text);
+}
+.layout-wrap{ display:flex; min-height:100vh; }
+.sidebar{ width:var(--sidebar-w); position:sticky; top:0; height:100vh; overflow-y:auto; background:var(--surface); }
+.sidebar-header{ background:var(--surface-2); }
+.logo-chip{
+  width:32px;height:32px;border-radius:8px;display:grid;place-items:center;color:#fff;
+  background:linear-gradient(135deg,#5b8def 0%, #4cc0e1 100%); box-shadow:0 6px 18px rgba(91,141,239,.35);
+}
+.sidebar-nav .list-group-item{
+  border:0; border-radius:10px; margin:.2rem .5rem; color:var(--text);
+}
+.sidebar-nav .list-group-item.active{
+  background: linear-gradient(90deg, var(--brand-1), var(--brand-2));
+  color:#fff; box-shadow:0 10px 22px color-mix(in oklab, var(--brand-1) 28%, transparent);
+}
+.layout-content{ flex:1; min-width:0; background:transparent; }
+
+/* Topbar */
+.bg-surface{ background:var(--surface); }
+.topbar .avatar{ width:28px;height:28px;border-radius:50%;object-fit:cover; }
+.search-pill .form-control{ background:transparent; border-color:var(--border); }
+.search-pill .input-group-text{ border-color:var(--border); }
+
+/* Footer */
+.app-footer{
+  border-top:1px solid var(--border);
+  background:linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,.03) 100%);
+}
+html[data-theme="dark"] .app-footer{
+  background:linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,.04) 100%);
+}
+
+/* Cards / KPIs / Tables */
+.card-glass{
+  border:1px solid var(--border);
+  border-radius:16px; background:var(--surface);
+  box-shadow:var(--shadow);
+}
+.card-kpi{ composes: card-glass; } /* (ignorará se o bundler não existir; é só referência) */
+.card-kpi{ border:1px solid var(--border); border-radius:16px; background:var(--surface); box-shadow:var(--shadow); }
+.kpi-label{ text-transform:uppercase; font-size:.72rem; color:var(--muted); letter-spacing:.5px; }
+.kpi-value{ font-size:1.6rem; font-weight:700; }
+.kpi-icon{
+  width:42px;height:42px;border-radius:12px;display:grid;place-items:center;color:#fff;
+  background:linear-gradient(135deg,#7c3aed 0%,#06b6d4 100%); box-shadow:0 10px 20px rgba(124,58,237,.25);
+}
+
+.card-h{ border:1px solid var(--border); border-radius:16px; background:var(--surface); box-shadow:var(--shadow); }
+.card-table{ border:1px solid var(--border); border-radius:16px; background:var(--surface); box-shadow:var(--shadow); }
+.card-table .table thead th{ position:sticky; top:0; background:var(--surface-2); z-index:1; }
+
+/* Buttons */
+.btn-soft{
+  color:var(--text); background:color-mix(in oklab, var(--surface-2) 70%, white);
+  border:1px solid var(--border); border-radius:10px;
+}
+.btn-gradient{ color:#fff; background:linear-gradient(135deg,#111827,#374151); border:0; border-radius:10px; }
+html[data-theme="dark"] .btn-gradient{ background:linear-gradient(135deg,#374151,#6b7280); }
+
+/* Utilities */
+.text-secondary{ color:var(--muted) !important; }
+
+.theme-icon{
+  display:inline-block;
+  transition: transform .28s ease, opacity .28s ease;
+  will-change: transform, opacity;
+}
+.theme-icon.spin-out{ transform: rotate(90deg) scale(.9); opacity: 0; }
+.theme-icon.spin-in{ transform: rotate(0) scale(1); opacity: 1; }
+@media (prefers-reduced-motion: reduce){
+  .theme-icon{ transition: none !important; }
+}
+
+/* ===== Dark Contrast Patch (interno) ===== */
+
+/* 1) Reforça tokens no dark */
+html[data-theme="dark"]{
+  --text: #f3f4f6;            /* texto principal mais claro */
+  --muted: #cbd5e1;           /* textos secundários */
+  --surface: #0f172a;         /* cartões */
+  --surface-2: #0b1326;       /* cabeçalhos, barras */
+  --border: #27324a;          /* borda visível */
+  --border-2: #2d3a56;
+}
+
+/* 2) Cards e barras */
+html[data-theme="dark"] .bg-surface{ background: var(--surface); }
+html[data-theme="dark"] .card-glass,
+html[data-theme="dark"] .card-h,
+html[data-theme="dark"] .card-table{
+  background: var(--surface);
+  border-color: var(--border);
+  box-shadow: var(--shadow);
+}
+
+/* 3) Tipografia e estados secundários */
+html[data-theme="dark"] body,
+html[data-theme="dark"] .table,
+html[data-theme="dark"] .list-group-item{
+  color: var(--text);
+}
+html[data-theme="dark"] .text-secondary,
+html[data-theme="dark"] .small,
+html[data-theme="dark"] .table thead th small{
+  color: var(--muted) !important;
+}
+
+/* 4) Inputs (texto + placeholder) e groups */
+html[data-theme="dark"] .form-control,
+html[data-theme="dark"] .form-select{
+  color: var(--text);
+  background-color: #0c1528;
+  border-color: var(--border);
+}
+html[data-theme="dark"] .form-control::placeholder{
+  color: #9fb0c6; /* placeholder legível */
+}
+html[data-theme="dark"] .input-group-text{
+  color: var(--muted);
+  background-color: #0c1528;
+  border-color: var(--border);
+}
+
+/* 5) Tabela com cabeçalho destacado */
+html[data-theme="dark"] .card-table .table thead th{
+  background: #0e1b34;
+  color: var(--muted);
+  border-bottom-color: var(--border-2);
+}
+html[data-theme="dark"] .table tbody td{
+  color: var(--text);
+  border-top-color: var(--border);
+}
+
+/* 6) Sidebar */
+html[data-theme="dark"] .sidebar{ background: #0b1222; }
+html[data-theme="dark"] .sidebar-header{ background: #0d1630; }
+html[data-theme="dark"] .sidebar-nav .list-group-item{
+  color: var(--text);
+  background: transparent;
+}
+html[data-theme="dark"] .sidebar-nav .list-group-item:hover{
+  background: rgba(255,255,255,.04);
+}
+html[data-theme="dark"] .sidebar-nav .list-group-item.active{
+  color:#fff;
+  box-shadow: 0 10px 22px rgba(27,130,255,.25);
+}
+
+/* 7) Botões suaves e search */
+html[data-theme="dark"] .btn-soft{
+  color: var(--text);
+  background: #0e1b34;
+  border-color: var(--border);
+}
+html[data-theme="dark"] .search-pill .form-control,
+html[data-theme="dark"] .search-pill .input-group-text{
+  background-color: #0c1528;
+  border-color: var(--border);
+  color: var(--text);
+}
+
+/* 8) Footer */
+html[data-theme="dark"] .app-footer{
+  border-top-color: var(--border);
+}
+
+/* 9) Links em dark */
+html[data-theme="dark"] a{ color: #7db7ff; }
+html[data-theme="dark"] a:hover{ color: #a4cbff; }
+
+html[data-theme] body, 
+.card-glass, 
+.card-h, 
+.card-table, 
+.sidebar, 
+.bg-surface {
+  transition: background-color .12s ease, 
+              color .12s ease, 
+              border-color .12s ease;
+}
+

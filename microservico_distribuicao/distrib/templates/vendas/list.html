@@ -1,0 +1,72 @@
+{% extends "base_dashboard.html" %}
+{% block title %}Vendas · Distribuição{% endblock %}
+
+{% block content %}
+{% include "partials/_page_header.html" with title="Vendas" subtitle="Listagem e filtros" %}
+
+<div class="card-glass p-3 mb-3">
+  <form method="get" class="row gy-2 gx-2 align-items-end">
+    <div class="col-sm-6 col-md-5 col-lg-4">
+      <label class="form-label">Busca</label>
+      <div class="input-group">
+        <span class="input-group-text"><i class="fa fa-search"></i></span>
+        <input type="text" name="q" value="{{ q }}" class="form-control" placeholder="Cliente, Produto ou id_mensagem">
+      </div>
+    </div>
+    <div class="col-sm-4 col-md-3">
+      <label class="form-label">Forma de pagamento</label>
+      <select name="forma" class="form-select">
+        <option value="">Todas</option>
+        <option value="PIX" {% if forma == "PIX" %}selected{% endif %}>Pix</option>
+        <option value="CREDITO" {% if forma == "CREDITO" %}selected{% endif %}>Cartão de Crédito</option>
+        <option value="DEBITO" {% if forma == "DEBITO" %}selected{% endif %}>Cartão de Débito</option>
+        <option value="DINHEIRO" {% if forma == "DINHEIRO" %}selected{% endif %}>Dinheiro</option>
+        <option value="BOLETO" {% if forma == "BOLETO" %}selected{% endif %}>Boleto</option>
+        <option value="OUTROS" {% if forma == "OUTROS" %}selected{% endif %}>Outros</option>
+      </select>
+    </div>
+    <div class="col-sm-4 col-md-2">
+      <label class="form-label">De</label>
+      <input type="date" name="data_ini" value="{{ data_ini }}" class="form-control" placeholder="dd/mm/aaaa">
+    </div>
+    <div class="col-sm-4 col-md-2">
+      <label class="form-label">Até</label>
+      <input type="date" name="data_fim" value="{{ data_fim }}" class="form-control" placeholder="dd/mm/aaaa">
+    </div>
+    <div class="col-auto">
+      <button class="btn btn-primary mt-4"><i class="fa fa-filter me-1"></i> Filtrar</button>
+    </div>
+  </form>
+</div>
+
+<div class="card-table">
+  <div class="table-responsive">
+    <table class="table table-hover table-striped align-middle mb-0">
+      <thead>
+        <tr>
+          <th>Data/Hora</th><th>Cliente</th><th>Produto</th>
+          <th class="text-end">Qtd</th><th class="text-end">Preço</th><th class="text-end">Total</th><th>Forma</th><th>Id msg</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for v in vendas %}
+        <tr>
+          <td>{{ v.data_hora|date:"d/m/Y H:i" }}</td>
+          <td>{{ v.cliente.nome }}</td>
+          <td>{{ v.produto.nome }}</td>
+          <td class="text-end">{{ v.quantidade }}</td>
+          <td class="text-end">{{ v.preco_unitario }}</td>
+          <td class="text-end fw-semibold">{{ v.valor_total }}</td>
+          <td>{{ v.get_forma_pagamento_display }}</td>
+          <td><small class="text-muted">{{ v.id_mensagem|slice:":10" }}…</small></td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="8" class="text-center text-secondary py-4">Nenhuma venda encontrada.</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% include "partials/_pagination.html" with page_obj=page_obj %}
+{% endblock %}

@@ -1,0 +1,14 @@
+<div class="page-header d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-2 mb-3">
+  <div>
+    <h1 class="h4 mb-0">{{ title }}</h1>
+    {% if subtitle %}<div class="text-secondary small">{{ subtitle }}</div>{% endif %}
+  </div>
+  <div class="d-flex gap-2">
+    {% if actions %}
+      {{ actions|safe }}
+    {% else %}
+      <button class="btn btn-soft btn-sm" disabled><i class="fa fa-file-export me-1"></i> Exportar CSV</button>
+      <button class="btn btn-soft btn-sm" disabled><i class="fa fa-file-pdf me-1"></i> PDF</button>
+    {% endif %}
+  </div>
+</div>

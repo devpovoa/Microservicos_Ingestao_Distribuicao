@@ -1,0 +1,105 @@
+/* ---------- Tokens */
+:root{
+  --brand-1:#0667ff;
+  --brand-2:#2aa0ff;
+  --bg:#f6f8fb;
+  --text:#1f2937;
+  --muted:#6b7280;
+  --card:#ffffff;
+  --border: #e5e7eb;
+  --shadow: 0 16px 40px rgba(0,0,0,.08);
+}
+html[data-theme="dark"]{
+  --brand-1:#1b82ff;
+  --brand-2:#6db6ff;
+  --bg:#0f172a;
+  --text:#e5e7eb;
+  --muted:#94a3b8;
+  --card:#0b1222;
+  --border:#172036;
+  --shadow: 0 16px 40px rgba(0,0,0,.45);
+}
+
+/* ---------- Navbar */
+.public-navbar{
+  background: linear-gradient(90deg,var(--brand-1) 0%, var(--brand-2) 100%);
+}
+.public-navbar .navbar-brand,.public-navbar .nav-link,.public-navbar .btn{
+  color:#fff !important;
+}
+.public-navbar .nav-link{ opacity:.95; }
+.public-navbar .nav-link:hover{ opacity:1; text-decoration:underline; }
+
+.brand-chip{
+  width:34px;height:34px;border-radius:10px;
+  display:grid;place-items:center;color:#fff;
+  background: linear-gradient(135deg,#5b8def 0%, #4cc0e1 100%);
+  box-shadow:0 6px 18px rgba(91,141,239,.35);
+}
+
+/* ---------- Background e footer */
+.public-bg{
+  background:
+    radial-gradient(ellipse at 10% 10%, color-mix(in oklab, var(--brand-1) 12%, transparent), transparent 40%),
+    radial-gradient(ellipse at 90% 20%, color-mix(in oklab, var(--brand-2) 12%, transparent), transparent 45%),
+    radial-gradient(ellipse at 30% 90%, color-mix(in oklab, var(--brand-1) 6%, transparent), transparent 50%),
+    var(--bg);
+  min-height:100vh;
+  color:var(--text);
+}
+.public-footer{
+  border-top:1px solid var(--border);
+  background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,.03) 100%);
+}
+html[data-theme="dark"] .public-footer{
+  background: linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,.03) 100%);
+}
+
+/* ---------- Card de autenticação */
+.auth-card{
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--card);
+  box-shadow: var(--shadow);
+}
+.form-control, .form-floating>label{ color:var(--text); }
+.form-control{ background:transparent; border-color:var(--border); }
+.form-control:focus{
+  box-shadow:0 0 0 .25rem color-mix(in oklab, var(--brand-1) 25%, transparent);
+  border-color: color-mix(in oklab, var(--brand-2) 60%, var(--brand-1));
+}
+
+/* ---------- Botões especiais */
+.btn-pill{ border-radius:999px; padding:.45rem .9rem; }
+.btn-cta{
+  color:#fff !important;
+  background: linear-gradient(135deg, var(--brand-1) 0%, var(--brand-2) 100%);
+  border:0;
+  box-shadow:0 10px 24px color-mix(in oklab, var(--brand-1) 30%, transparent);
+}
+.btn-cta:hover{ filter:brightness(1.05); }
+.btn-soft{
+  color:#fff !important;
+  background:rgba(255,255,255,.2);
+  border:1px solid rgba(255,255,255,.35);
+  backdrop-filter: blur(4px);
+}
+.btn-gradient{
+  color:#fff; background:linear-gradient(135deg,#111827,#374151); border:0;
+}
+html[data-theme="dark"] .btn-gradient{ background:linear-gradient(135deg,#374151,#6b7280); }
+
+/* ---------- Util */
+.small, .text-muted{ color:var(--muted) !important; }
+
+/* animação do ícone do tema (igual ao app.css) */
+.theme-icon{
+  display:inline-block;
+  transition: transform .28s ease, opacity .28s ease;
+  will-change: transform, opacity;
+}
+.theme-icon.spin-out{ transform: rotate(90deg) scale(.9); opacity: 0; }
+.theme-icon.spin-in{ transform: rotate(0) scale(1); opacity: 1; }
+@media (prefers-reduced-motion: reduce){
+  .theme-icon{ transition: none !important; }
+}

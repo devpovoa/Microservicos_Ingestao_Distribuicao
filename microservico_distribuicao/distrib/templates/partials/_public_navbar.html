@@ -1,0 +1,39 @@
+<nav class="navbar navbar-expand-lg public-navbar shadow-sm">
+  <div class="container">
+    <a class="navbar-brand d-flex align-items-center" href="/">
+      <span class="brand-chip me-2"><i class="fa fa-bolt"></i></span>
+      <span class="fw-semibold">Distribuição</span>
+    </a>
+    <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navPublic">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div id="navPublic" class="collapse navbar-collapse">
+      <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
+        <li class="nav-item"><a class="nav-link" href="{% url 'clientes:list' %}"><i class="fa fa-users me-1"></i> Clientes</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'produtos:list' %}"><i class="fa fa-box me-1"></i> Produtos</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'vendas:list' %}"><i class="fa fa-receipt me-1"></i> Vendas</a></li>
+
+        <li class="nav-item ms-lg-2">
+          <button id="themeTogglePublic" class="btn btn-pill btn-gradient" type="button" title="Tema claro/escuro">
+            <i id="themeIconPublic" class="fa fa-moon theme-icon" aria-hidden="true"></i>
+            <span class="visually-hidden" id="themeLabelPublic">Alternar tema</span>
+          </button>
+        </li>
+
+        {% if user.is_authenticated %}
+          <li class="nav-item ms-lg-2">
+            <a class="btn btn-pill btn-soft" href="{% url 'dashboard:home' %}">
+              <i class="fa fa-gauge-high me-1"></i> Painel
+            </a>
+          </li>
+        {% else %}
+          <li class="nav-item ms-lg-2">
+            <a class="btn btn-pill btn-cta" href="{% url 'login' %}">
+              <i class="fa fa-right-to-bracket me-1"></i> Entrar
+            </a>
+          </li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</nav>

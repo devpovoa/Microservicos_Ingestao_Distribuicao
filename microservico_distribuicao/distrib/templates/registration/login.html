@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Acesse sua conta · Distribuição{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-sm-10 col-md-8 col-lg-4">
+    <div class="auth-card p-4">
+      <div class="d-flex align-items-start gap-2 mb-3">
+        <div class="brand-chip"><i class="fa fa-bolt"></i></div>
+        <div>
+          <h1 class="h5 mb-1">Acesse sua conta</h1>
+          <div class="small text-muted">Bem-vindo ao painel de distribuição</div>
+        </div>
+      </div>
+
+      <form method="post" novalidate>
+        {% csrf_token %}
+        <div class="mb-2">
+          <label class="form-label">Usuário</label>
+          <input type="text" name="username" autofocus required id="id_username" class="form-control" placeholder="Seu usuário">
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Senha</label>
+          <input type="password" name="password" required id="id_password" class="form-control" placeholder="Sua senha">
+        </div>
+
+        {% if form.errors %}
+          <div class="alert alert-danger py-2">Usuário ou senha inválidos.</div>
+        {% endif %}
+
+        <div class="d-grid">
+          <button class="btn btn-cta btn-pill" type="submit">
+            <i class="fa fa-right-to-bracket me-2"></i> Acessar
+          </button>
+        </div>
+      </form>
+
+      <div class="d-flex justify-content-between mt-3 small">
+        <a href="{% url 'password_reset' %}">Esqueci minha senha</a>
+        <a href="{% url 'dashboard:home' %}">Voltar ao site</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
