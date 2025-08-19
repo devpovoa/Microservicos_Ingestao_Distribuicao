@@ -1,15 +1,29 @@
-import json
+import os
 
-from app.core.celery_app import celery_app
+from celery import Celery
+
+BROKER_URL = os.getenv("RABBITMQ_URL", "amqp://guest:guest@rabbitmq:5672//")
+
+# Cliente Celery só para publicar
+celery_client = Celery(__name__, broker=BROKER_URL)
+celery_client.conf.update(
+    task_serializer="json",
+    accept_content=["json"],
+    result_serializer="json",
+    task_default_queue="processed_data",
+)
 
 
-@celery_app.task(name="tasks.publisher.send_to_queue")
-def send_to_queue(data: dict):
+def publish_processed_data(payload: dict) -> str:
     """
-    Publica os dados processados com JSON na fila 'processed_data'
+    Publica o payload normalizado para o consumidor (Django) na fila processed_data.
+    Retorna o task_id.
     """
-
-    message = json.dumps(data)
-    print(
-        f'[Celery Publisher] Mensagem enviada para fila processed_data: {message[:120]}...')
-    return message
+    res = celery_client.send_task(
+        "workers.tasks.persist_processed_data",     # task do Django
+        kwargs={"payload": payload},
+        queue="processed_data",
+        exchange="default",                         # casa com o worker
+        routing_key="processed_data",
+    )
+    return res.id

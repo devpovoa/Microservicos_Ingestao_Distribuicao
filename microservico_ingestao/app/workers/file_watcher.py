@@ -7,7 +7,7 @@ import pandas as pd
 from app.core.config import settings
 from app.core.database import SessionLocal
 from app.models.temp_models import ClienteTemp, CompraTemp, ProdutoTemp
-from app.tasks.publisher import send_to_queue
+from app.tasks.publisher import publish_processed_data
 from sqlalchemy.orm import Session
 
 DATA_PATH = "/app/data"
@@ -107,43 +107,55 @@ def process_excel(file_path: str):
             produtos = db.query(ProdutoTemp).all()
             compras = db.query(CompraTemp).all()
 
-            # Montar payload com dados tratados
-            payload = {
-                "clientes": [
-                    {
-                        "id": c.id,
+            # Buscar os dados já persistidos no banco TEMP
+            clientes = db.query(ClienteTemp).all()
+            produtos = db.query(ProdutoTemp).all()
+            compras = db.query(CompraTemp).all()
+
+            # Index para montar o payload de cada compra
+            cli_idx = {c.id: c for c in clientes}
+            prod_idx = {p.id: p for p in produtos}
+
+            # Publica UMA mensagem por compra
+            for cp in compras:
+                c = cli_idx.get(cp.cliente_id)
+                p = prod_idx.get(cp.produto_id)
+
+                if not c or not p:
+                    print(
+                        f"[WARN] Cliente/Produto não encontrado para compra {cp.id}", flush=True)
+                    continue
+
+                payload = {
+                    "cliente": {
                         "nome": c.nome,
                         "email": c.email,
                         "telefone": c.telefone,
                         "cpf_cnpj": c.cpf_cnpj,
                         "endereco_completo": c.endereco_completo,
-                    }
-                    for c in clientes
-                ],
-                "produtos": [
-                    {
-                        "id": p.id,
+                    },
+                    "produto": {
+                        # o parser do Django já converte nome_produto -> nome
                         "nome_produto": p.nome_produto,
-                    }
-                    for p in produtos
-                ],
-                "compras": [
-                    {
-                        "id": cp.id,
-                        "cliente_id": cp.cliente_id,
-                        "produto_id": cp.produto_id,
-                        "quantidade": cp.quantidade,
-                        "valor_unitario": cp.valor_unitario,
-                        "valor_total": cp.valor_total,
-                        "data_hora": cp.data_hora.isoformat(),
-                        "forma_pagamento": cp.forma_pagamento,
-                    }
-                    for cp in compras
-                ],
-            }
+                    },
+                    "quantidade": int(cp.quantidade),
+                    "valor_unitario": float(cp.valor_unitario),
+                    "valor_total": float(cp.valor_total),
+                    "data_hora": cp.data_hora.isoformat(),  # o parser no Django torna aware
+                    "forma_pagamento": cp.forma_pagamento,
+                }
 
-        # Enviar para RabbitMQ via Celery
-        send_to_queue.delay(payload)
+                # Enviar para RabbitMQ via Celery (publisher puro)
+                try:
+                    task_id = publish_processed_data(payload)
+                    print(
+                        f"[INFO] Publicado no RabbitMQ (processed_data). task_id={task_id}", flush=True)
+                except Exception as e:
+                    print(
+                        f"[ERRO] Falha ao publicar compra {cp.id}: {e}", flush=True)
+
+            print("[INFO] Todas as compras foram publicadas no RabbitMQ", flush=True)
+
         print("[INFO] Payload normalizado enviado para RabbitMQ", flush=True)
 
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")

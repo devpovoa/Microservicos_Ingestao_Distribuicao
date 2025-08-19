@@ -203,3 +203,101 @@ html[data-theme] body,
               border-color .12s ease;
 }
 
+/* KPIs: evitar overflow e ajustar tamanho de forma fluida */
+.card-kpi .kpi-content{ flex:1; min-width:0; }       /* permite encolher */
+.kpi-value{
+  font-weight:700;
+  line-height:1.1;
+  font-size: clamp(1.1rem, 0.9rem + 1.2vw, 1.6rem);  /* reduz em telas menores */
+  overflow-wrap: anywhere;                            /* quebra números longos */
+}
+.card-kpi .kpi-meta{ font-size:.875rem; }
+
+.no-theme-transition, .no-theme-transition * { transition: none !important; }
+.theme-animate html[data-theme] body,
+.theme-animate .card-glass, .theme-animate .card-h,
+.theme-animate .card-table, .theme-animate .sidebar, .theme-animate .bg-surface {
+  transition: background-color .12s ease, color .12s ease, border-color .12s ease;
+}
+
+/* Estilos padrão (tema claro) já existentes permanecem */
+
+/* Ajustes para tema dark */
+html[data-theme="dark"] table {
+  color: #e6e6e6; /* texto claro */
+  background-color: #1e1e2f; /* fundo principal escuro */
+}
+
+html[data-theme="dark"] thead th {
+  background-color: #111827; /* cabeçalho mais escuro */
+  color: #f9fafb; /* branco quase total */
+}
+
+html[data-theme="dark"] tbody tr {
+  background-color: #1f2937; /* cinza-escuro */
+}
+
+html[data-theme="dark"] tbody tr:nth-child(even) {
+  background-color: #273248; /* linha alternada */
+}
+
+html[data-theme="dark"] tbody tr:hover {
+  background-color: #374151; /* realce ao passar o mouse */
+  color: #ffffff;
+}
+
+/* Correção: texto legível no tema escuro */
+html[data-theme="dark"] tbody td,
+html[data-theme="dark"] tbody th {
+  color: #e5e7eb; /* cinza bem claro */
+}
+
+html[data-theme="dark"] thead th {
+  background-color: #111827; /* cabeçalho escuro */
+  color: #f9fafb; /* texto claro */
+}
+
+/* ===== Bootstrap Table – Tema Dark via CSS Variables ===== */
+/* Escopo: somente tabelas dentro de cards de tabela */
+html[data-theme="dark"] .card-table .table{
+  /* texto e fundo base */
+  --bs-table-color: #e6edf7;         /* texto principal */
+  --bs-table-bg: #0f172a;            /* fundo geral da tabela */
+  --bs-table-border-color: #27324a;  /* bordas */
+
+  /* zebra e hover */
+  --bs-table-striped-bg: #101828;    /* linha alternada */
+  --bs-table-striped-color: #e6edf7;
+  --bs-table-hover-bg: #1b2439;      /* hover */
+  --bs-table-hover-color: #ffffff;
+
+  /* cabeçalho/rodapé (se usar .table-dark/light o BS troca; aqui forçamos) */
+  --bs-table-accent-bg: transparent; /* evita overlay cinza em thead */
+}
+
+/* Cabeçalho fixo do seu card */
+html[data-theme="dark"] .card-table .table thead th{
+  background: #0e1b34 !important;
+  color: #d6deea !important;
+  border-bottom-color: #2d3a56 !important;
+}
+
+/* Células: garante legibilidade mesmo se alguma classe do BS tentar sobrepor */
+html[data-theme="dark"] .card-table .table tbody td,
+html[data-theme="dark"] .card-table .table tbody th{
+  color: var(--bs-table-color) !important;
+  border-top-color: var(--bs-table-border-color) !important;
+}
+
+/* Opcional: paginador dentro do card em dark */
+html[data-theme="dark"] .card-table .pagination .page-link{
+  background-color: #0e1b34;
+  border-color: #27324a;
+  color: #d6deea;
+}
+html[data-theme="dark"] .card-table .pagination .page-item.active .page-link{
+  background: linear-gradient(135deg,#3b82f6,#60a5fa);
+  border-color: transparent;
+  color: #fff;
+}
+

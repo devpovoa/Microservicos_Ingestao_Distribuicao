@@ -8,6 +8,14 @@ services:
     ports:
       - "5672:5672"
       - "15672:15672"
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+    restart: unless-stopped
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
     networks:
       - micro_net
 
@@ -20,6 +28,14 @@ services:
       POSTGRES_DB: ingest_db
     ports:
       - "5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ingest_user -d ingest_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+    restart: unless-stopped
+    volumes:
+      - pg_ingest_data:/var/lib/postgresql/data
     networks:
       - micro_net
 
@@ -32,6 +48,14 @@ services:
       POSTGRES_DB: distrib_db
     ports:
       - "5434:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U distrib_user -d distrib_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+    restart: unless-stopped
+    volumes:
+      - pg_distrib_data:/var/lib/postgresql/data
     networks:
       - micro_net
 
@@ -47,26 +71,37 @@ services:
     volumes:
       - ${HOST_DATA_PATH}:/app/data
     depends_on:
-      - postgres_ingest
-      - rabbitmq
+      rabbitmq:
+        condition: service_healthy
+      postgres_ingest:
+        condition: service_healthy
     ports:
       - "8001:8000"
+    restart: unless-stopped
     networks:
       - micro_net
-  
-  celery_worker_ingest:
-    build: ./microservico_ingestao
-    container_name: celery_worker_ingest
+
+  # ⛔ REMOVIDO: celery_worker_ingest
+  # O ingestor é só publisher, não precisa (nem deve) ter worker Celery.
+
+  django_distrib:
+    build: ./microservico_distribuicao
+    container_name: django_distrib
     env_file:
       - .env
     environment:
-      TZ: America/Sao_Paulo
-      DATABASE_URL: postgresql+psycopg2://ingest_user:ingest_pass@postgres_ingest:5432/ingest_db
-      RABBITMQ_URL: ${RABBITMQ_URL}
-    command: celery -A app.core.celery_app.celery_app worker --loglevel=INFO
+      TZ: ${TZ:-America/Sao_Paulo}
+    working_dir: /app/distrib
+    volumes:
+      - ./microservico_distribuicao:/app
     depends_on:
-      - rabbitmq
-      - fastapi_ingest
+      rabbitmq:
+        condition: service_healthy
+      postgres_distrib:
+        condition: service_healthy
+    ports:
+      - "8002:8000"
+    restart: unless-stopped
     networks:
       - micro_net
 
@@ -77,33 +112,26 @@ services:
       - .env
     environment:
       TZ: ${TZ:-America/Sao_Paulo}
-    depends_on:
-      - rabbitmq
-      - postgres_distrib
-      - django_distrib
-    command: celery -A core.celery_app.celery_app worker --loglevel=INFO -Q processed_data,default
+    working_dir: /app/distrib
+    command: celery -A core.celery_app.celery_app worker --loglevel=INFO -Q processed_data -E
     volumes:
       - ./microservico_distribuicao:/app
-    networks:
-      - micro_net
-
-  django_distrib:
-    build: ./microservico_distribuicao
-    container_name: django_distrib
-    env_file:
-      - .env
-    environment:
-      TZ: ${TZ:-America/Sao_Paulo}
     depends_on:
-      - postgres_distrib
-      - rabbitmq
-    ports:
-      - "8002:8000"
-    volumes:
-      - ./microservico_distribuicao:/app
+      rabbitmq:
+        condition: service_healthy
+      postgres_distrib:
+        condition: service_healthy
+      django_distrib:
+        condition: service_started
+    restart: unless-stopped
     networks:
       - micro_net
 
 networks:
   micro_net:
     driver: bridge
+
+volumes:
+  rabbitmq_data:
+  pg_ingest_data:
+  pg_distrib_data:

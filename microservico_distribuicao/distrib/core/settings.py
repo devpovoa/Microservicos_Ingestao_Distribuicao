@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    "django.contrib.humanize",
 ]
 
 INSTALLED_APPS += [
@@ -160,9 +161,11 @@ CELERY_TASK_QUEUES = (
 )
 
 # Opcional: roteamento — garante que nossa task vá/venha da fila certa
+# === Importar módulo de tasks (fora de apps do INSTALLED_APPS) ===
+CELERY_IMPORTS = ("workers.tasks",)
+
+# Roteamento (você já tinha, mantenha assim):
 CELERY_TASK_ROUTES = {
-    # sua task "oficial"
     "workers.tasks.persist_processed_data": {"queue": "processed_data", "routing_key": "processed_data"},
-    # alias publicado pelo produtor
-    "tasks.publisher.send_to_queue": {"queue": "processed_data", "routing_key": "processed_data"},
+    "tasks.publisher.send_to_queue":       {"queue": "processed_data", "routing_key": "processed_data"},
 }
