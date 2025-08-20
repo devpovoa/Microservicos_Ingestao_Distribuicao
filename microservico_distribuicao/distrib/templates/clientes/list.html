@@ -1,55 +1,106 @@
 {% extends "base_dashboard.html" %}
+{% load formatting %}
 {% block title %}Clientes · Distribuição{% endblock %}
 
 {% block content %}
-{% include "partials/_page_header.html" with title="Clientes" subtitle="Listagem e filtros" %}
+  {% include "partials/_page_header.html" with title="Clientes" subtitle="Listagem e relatórios" %}
 
-<div class="card-glass p-3 mb-3">
-  <form method="get" class="row gy-2 gx-2 align-items-end">
-    <div class="col-sm-6 col-md-5 col-lg-4">
-      <label class="form-label">Busca</label>
-      <div class="input-group">
-        <span class="input-group-text"><i class="fa fa-search"></i></span>
-        <input type="text" name="q" value="{{ q }}" class="form-control" placeholder="Nome, e-mail ou CPF/CNPJ">
+  <div class="card-glass p-3 mb-3">
+    <form method="get" class="row gy-2 gx-2 align-items-end">
+      <div class="col-sm-6 col-md-5 col-lg-4">
+        <label class="form-label">Busca</label>
+        <div class="input-group">
+          <span class="input-group-text"><i class="fa fa-search"></i></span>
+          <input type="text" name="q" value="{{ q }}" class="form-control" placeholder="Nome, e-mail ou CPF/CNPJ">
+        </div>
       </div>
-    </div>
-    <div class="col-sm-4 col-md-3">
-      <div class="form-check mt-4">
-        <input class="form-check-input" type="checkbox" name="has_email" value="1" id="has_email" {% if has_email == "1" %}checked{% endif %}>
-        <label class="form-check-label" for="has_email">Somente com e-mail</label>
-      </div>
-    </div>
-    <div class="col-auto">
-      <button class="btn btn-primary mt-4"><i class="fa fa-filter me-1"></i> Filtrar</button>
-    </div>
-  </form>
-</div>
 
-<div class="card-table">
-  <div class="table-responsive">
-    <table class="table table-hover table-striped align-middle mb-0">
-      <thead>
-        <tr>
-          <th>Nome</th><th>Email</th><th>CPF/CNPJ</th><th>Telefone</th><th class="text-center">Compras</th><th>Criado em</th>
-        </tr>
-      </thead>
-      <tbody>
-      {% for c in clientes %}
-        <tr>
-          <td>{{ c.nome }}</td>
-          <td>{{ c.email|default:"—" }}</td>
-          <td>{{ c.cpf_cnpj|default:"—" }}</td>
-          <td>{{ c.telefone|default:"—" }}</td>
-          <td class="text-center"><span class="badge text-bg-secondary">{{ c.total_compras }}</span></td>
-          <td>{{ c.created_at|date:"d/m/Y H:i" }}</td>
-        </tr>
-      {% empty %}
-        <tr><td colspan="6" class="text-center text-secondary py-4">Nenhum cliente encontrado.</td></tr>
-      {% endfor %}
-      </tbody>
-    </table>
+      <div class="col-sm-4 col-md-3">
+        <div class="form-check mt-4">
+          <input class="form-check-input" type="checkbox" name="has_email" value="1" id="has_email"
+                 {% if has_email == "1" %}checked{% endif %}>
+          <label class="form-check-label" for="has_email">Somente com e-mail</label>
+        </div>
+      </div>
+
+      <div class="col-auto d-flex gap-2">
+        <button class="btn btn-primary mt-4">
+          <i class="fa fa-filter me-1"></i> Filtrar
+        </button>
+        <a class="btn btn-light mt-4" href="{% url 'clientes:list' %}">
+          Limpar
+        </a>
+      </div>
+    </form>
   </div>
-</div>
 
-{% include "partials/_pagination.html" with page_obj=page_obj %}
+  <div class="card-table">
+    <div class="table-responsive">
+      <table class="table table-hover table-striped align-middle mb-0">
+        <thead>
+          <tr>
+            <th>Nome</th>
+            <th>Email</th>
+            <th>CPF/CNPJ</th>
+            <th>Telefone</th>
+            <th class="text-center">Compras</th>
+            <th>Receita (R$)</th>
+            <th>Ticket médio (R$)</th>
+            <th>Última compra</th>
+            <th>Criado em</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for c in clientes %}
+            {% with qtd=c.qtd_compras|default_if_none:0 rec=c.receita_total|default_if_none:0 %}
+            <tr>
+              <td>{{ c.nome }}</td>
+              <td>{{ c.email|default:"—" }}</td>
+              <td>{{ c.cpf_cnpj|default:"—" }}</td>
+              <td>{{ c.telefone|default:"—" }}</td>
+
+              <td class="text-center">
+                <span class="badge text-bg-secondary">{{ qtd }}</span>
+              </td>
+
+              <td>
+                R$ {{ rec|brl }}
+              </td>
+
+              <td>
+                {% if qtd %}
+                  R$ {{ rec|div0:qtd|brl }}
+                {% else %}
+                  R$ 0,00
+                {% endif %}
+              </td>
+
+              <td>
+                {% if c.ultima_compra %}
+                  {{ c.ultima_compra|date:"d/m/Y H:i" }}
+                {% else %}
+                  —
+                {% endif %}
+              </td>
+
+              <td>
+                {% if c.created_at %}
+                  {{ c.created_at|date:"d/m/Y H:i" }}
+                {% else %}
+                  —
+                {% endif %}
+              </td>
+            </tr>
+            {% endwith %}
+          {% empty %}
+            <tr>
+              <td colspan="9" class="text-center text-secondary py-4">Nenhum cliente encontrado.</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  {% include "partials/_pagination.html" with page_obj=page_obj %}
 {% endblock %}

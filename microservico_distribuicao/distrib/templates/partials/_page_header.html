@@ -4,11 +4,15 @@
     {% if subtitle %}<div class="text-secondary small">{{ subtitle }}</div>{% endif %}
   </div>
   <div class="d-flex gap-2">
-    {% if actions %}
-      {{ actions|safe }}
-    {% else %}
-      <button class="btn btn-soft btn-sm" disabled><i class="fa fa-file-export me-1"></i> Exportar CSV</button>
-      <button class="btn btn-soft btn-sm" disabled><i class="fa fa-file-pdf me-1"></i> PDF</button>
+    {% if actions and request.resolver_match %}
+      {% if request.resolver_match.namespace == 'clientes' %}
+        {{ actions|safe }}
+      {% elif request.resolver_match.namespace == 'produtos' %}
+        {{ actions|safe }}
+      {% elif request.resolver_match.namespace == 'vendas' %}
+        {{ actions|safe }}
+      {% endif %}
     {% endif %}
-  </div>
+</div>
+
 </div>

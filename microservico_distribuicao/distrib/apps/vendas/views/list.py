@@ -4,15 +4,19 @@ from apps.vendas.models import Compra
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
 from django.views.generic import ListView
+from utils.exports.mixins import ExportActionsMixin
 
 DATE_FMT = "%Y-%m-%d"
 
 
-class VendaListView(LoginRequiredMixin, ListView):
+class VendaListView(ExportActionsMixin, LoginRequiredMixin, ListView):
     model = Compra
     template_name = "vendas/list.html"
     context_object_name = "vendas"
     paginate_by = 20
+
+    export_csv_url_name = "vendas:export_csv"
+    export_pdf_url_name = "vendas:export_pdf"
 
     def get_queryset(self):
         qs = (Compra.objects
@@ -52,4 +56,6 @@ class VendaListView(LoginRequiredMixin, ListView):
         ctx["forma"] = self.request.GET.get("forma", "")
         ctx["data_ini"] = self.request.GET.get("data_ini", "")
         ctx["data_fim"] = self.request.GET.get("data_fim", "")
+        ctx["title"] = "Vendas"
+        ctx["subtitle"] = "Listagem e relatórios"
         return ctx

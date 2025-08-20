@@ -9,10 +9,9 @@ from .models import Compra
 
 def total_vendas_periodo(inicio: datetime, fim: datetime):
     return (Compra.objects
-            .filter(data_hora__gte=inicio,
-                    data_hora__lt=fim)
-            .aaggregate(total=Sum("valor_total"))["total"] or 0
-            )
+            .filter(data_hora__gte=inicio, data_hora__lt=fim)
+            # <-- fix aqui
+            .aggregate(total=Sum("valor_total"))["total"] or 0)
 
 
 def top_produtos_periodo(inicio: datetime, fim: datetime, limit: int = 5):
@@ -20,8 +19,7 @@ def top_produtos_periodo(inicio: datetime, fim: datetime, limit: int = 5):
             .filter(data_hora__gte=inicio, data_hora__lt=fim)
             .values("produto__nome")
             .annotate(qte=Sum("quantidade"), vendas=Sum("valor_total"))
-            .order_by("-qte")[:limit]
-            )
+            .order_by("-qte")[:limit])
 
 
 def kpis_periodo(inicio, fim):
@@ -33,14 +31,12 @@ def kpis_periodo(inicio, fim):
 
 
 def _month_label(d: date):
-    # ex.: Jan/2025
     return f"{month_name[d.month][:3]}/{d.year}"
 
 
 def serie_mensal_12m():
     """Soma por mês nos últimos 12 meses (inclui mês atual)."""
     today = timezone.localdate()
-    # constrói a lista de 12 meses (do mais antigo ao atual)
     months = []
     y, m = today.year, today.month
     for _ in range(12):
@@ -54,11 +50,7 @@ def serie_mensal_12m():
     points = []
     for y, m in months:
         start = date(y, m, 1)
-        # início do mês seguinte
-        if m == 12:
-            end = date(y+1, 1, 1)
-        else:
-            end = date(y, m+1, 1)
+        end = date(y + (1 if m == 12 else 0), (1 if m == 12 else m + 1), 1)
         total = (Compra.objects
                  .filter(data_hora__gte=start, data_hora__lt=end)
                  .aggregate(total=Sum("valor_total"))["total"] or 0)
@@ -70,11 +62,33 @@ def top_produtos_no_mes(limit=5):
     """Top produtos por receita no mês corrente."""
     today = timezone.localdate()
     start = today.replace(day=1)
-    end = (start.replace(month=start.month % 12 + 1, year=start.year + (start.month // 12))
-           if start.month < 12 else date(start.year + 1, 1, 1))
+    end = (date(start.year + 1, 1, 1) if start.month ==
+           12 else date(start.year, start.month + 1, 1))
     rows = (Compra.objects
             .filter(data_hora__gte=start, data_hora__lt=end)
             .values("produto__nome")
             .annotate(receita=Sum("valor_total"))
             .order_by("-receita")[:limit])
     return [{"produto": r["produto__nome"], "receita": r["receita"] or 0} for r in rows]
+
+
+# --- NOVO: gerador de linhas tabulares para CSV/PDF (baixa memória)
+def iter_vendas_rows(queryset):
+    """
+    Gera linhas no formato:
+    data, cliente_nome, cliente_documento, produto_codigo, produto_nome,
+    quantidade, preco_unitario, valor_total
+    """
+    qs = queryset.select_related("cliente", "produto")
+    for c in qs.iterator(chunk_size=2000):
+        data_str = c.data_hora.strftime("%d/%m/%Y") if c.data_hora else ""
+        yield (
+            data_str,
+            getattr(c.cliente, "nome", ""),
+            getattr(c.cliente, "cpf_cnpj", ""),
+            getattr(c.produto, "codigo", ""),
+            getattr(c.produto, "nome", ""),
+            c.quantidade,
+            c.preco_unitario,
+            c.valor_total,
+        )
