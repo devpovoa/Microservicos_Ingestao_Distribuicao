@@ -1,35 +1,93 @@
-<header class="topbar border-bottom bg-surface">
-  <div class="container-fluid d-flex align-items-center justify-content-between gap-2 py-2">
-    <form class="d-none d-md-flex" action="{% url 'vendas:list' %}" method="get" role="search">
-      <div class="input-group input-group-sm search-pill">
-        <span class="input-group-text bg-transparent"><i class="fa fa-search"></i></span>
-        <input name="q" class="form-control border-start-0" type="search" placeholder="Buscar vendas, clientes, produtos…">
-      </div>
-    </form>
-    <div class="d-flex align-items-center gap-2">
-      <a class="btn btn-soft btn-sm" href="{% url 'admin:index' %}"><i class="fa fa-shield-halved me-1"></i> Admin</a>
-      <button id="themeToggle" type="button" class="btn btn-gradient btn-sm" title="Tema claro/escuro">
+<header class="topbar bg-surface border-bottom topbar-sticky" role="banner">
+  <div class="container-fluid py-2 topbar-grid">
+    <!-- ESQUERDA: logo/brand -->
+    <div class="topbar-left d-flex align-items-center gap-2">
+      <a class="app-brand d-flex align-items-center text-decoration-none"
+         href="{% url 'dashboard:home' %}" aria-label="Página inicial">
+        <i class="fa fa-bolt me-2 brand-mark" aria-hidden="true"></i>
+        <span class="fw-semibold d-none d-sm-inline">Distribuição</span>
+      </a>
+
+      <!-- Botão para abrir/fechar busca no mobile -->
+      <button class="btn btn-soft btn-sm d-inline d-md-none" type="button"
+              data-bs-toggle="collapse" data-bs-target="#topbarSearch"
+              aria-controls="topbarSearch" aria-expanded="false" aria-label="Abrir busca">
+        <i class="fa fa-search"></i>
+      </button>
+    </div>
+
+    <!-- CENTRO: busca (desktop) -->
+    <div class="topbar-center d-none d-md-flex">
+      <form action="{% url 'vendas:list' %}" method="get"
+            role="search" aria-label="Buscar vendas, clientes e produtos" class="w-100">
+        <div class="input-group input-group-sm search-pill topbar-search-center">
+          <span class="input-group-text bg-transparent">
+            <i class="fa fa-search" aria-hidden="true"></i>
+          </span>
+          <input name="q" class="form-control border-start-0" type="search"
+                 placeholder="Buscar vendas, clientes, produtos…" aria-label="Buscar">
+        </div>
+      </form>
+    </div>
+
+    <!-- DIREITA: admin, tema, usuário -->
+    <div class="topbar-right d-flex align-items-center justify-content-end gap-2">
+      <a class="btn btn-soft btn-sm" href="{% url 'admin:index' %}">
+        <i class="fa fa-shield-halved me-1" aria-hidden="true"></i>
+        <span class="d-none d-sm-inline">Admin</span>
+      </a>
+
+      <button id="themeToggle" type="button" class="btn btn-gradient btn-sm"
+              title="Tema claro/escuro" aria-pressed="false" aria-label="Alternar tema">
         <i id="themeIcon" class="fa fa-moon theme-icon" aria-hidden="true"></i>
         <span class="visually-hidden" id="themeLabel">Alternar tema</span>
       </button>
+
       {% if user.is_authenticated %}
-        <div class="dropdown">
-          <a class="d-flex align-items-center text-decoration-none dropdown-toggle" href="#" data-bs-toggle="dropdown">
-            <img class="avatar" src="https://ui-avatars.com/api/?name={{ user.get_username }}&background=0D8ABC&color=fff" alt="avatar">
-            <span class="ms-2 small">{{ user.get_username }}</span>
-          </a>
-          <ul class="dropdown-menu dropdown-menu-end">
-            <li><a class="dropdown-item" href="{% url 'password_change' %}"><i class="fa fa-key me-2"></i> Trocar senha</a></li>
-            <li><hr class="dropdown-divider"></li>
-            <li>
-              <form method="post" action="{% url 'logout' %}" class="px-3 py-1">
-                {% csrf_token %}
-                <button class="btn btn-link p-0 text-danger"><i class="fa fa-right-from-bracket me-2"></i> Sair</button>
-              </form>
-            </li>
-          </ul>
-        </div>
+      <div class="dropdown">
+        <a class="d-flex align-items-center text-decoration-none dropdown-toggle"
+           href="#" data-bs-toggle="dropdown" aria-expanded="false"
+           aria-label="Abrir menu do usuário">
+          <img class="avatar"
+               src="https://ui-avatars.com/api/?name={{ user.get_username }}&background=0D8ABC&color=fff"
+               alt="" referrerpolicy="no-referrer">
+          <span class="ms-2 small d-none d-sm-inline">{{ user.get_username }}</span>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <li>
+            <a class="dropdown-item" href="{% url 'password_change' %}">
+              <i class="fa fa-key me-2" aria-hidden="true"></i> Trocar senha
+            </a>
+          </li>
+          <li><hr class="dropdown-divider"></li>
+          <li>
+            <form method="post" action="{% url 'logout' %}" class="px-3 py-1">
+              {% csrf_token %}
+              <button class="btn btn-link p-0 text-danger">
+                <i class="fa fa-right-from-bracket me-2" aria-hidden="true"></i> Sair
+              </button>
+            </form>
+          </li>
+        </ul>
+      </div>
       {% endif %}
     </div>
+  </div>
+
+  <!-- Busca mobile (collapse) -->
+  <div id="topbarSearch" class="collapse mt-2 d-md-none" data-bs-parent=".topbar">
+    <form action="{% url 'vendas:list' %}" method="get" role="search" aria-label="Buscar">
+      <div class="input-group input-group-sm search-pill">
+        <span class="input-group-text bg-transparent">
+          <i class="fa fa-search" aria-hidden="true"></i>
+        </span>
+        <input name="q" class="form-control border-start-0" type="search"
+               placeholder="Buscar vendas, clientes, produtos…">
+        <button class="btn btn-primary">
+          <i class="fa fa-arrow-right" aria-hidden="true"></i>
+          <span class="visually-hidden">Buscar</span>
+        </button>
+      </div>
+    </form>
   </div>
 </header>

@@ -1,23 +1,64 @@
-<nav class="sidebar shadow-sm">
-  <div class="sidebar-header px-3 py-3 border-bottom">
+<nav id="appSidebar" class="sidebar shadow-sm" aria-label="Barra lateral">
+  <div class="sidebar-header px-3 py-3 border-bottom d-flex align-items-center">
     <a href="{% url 'dashboard:home' %}" class="d-flex align-items-center text-decoration-none">
       <div class="logo-chip me-2"><i class="fa fa-bolt"></i></div>
-      <span class="fw-semibold">Distribuição</span>
+      <span class="fw-semibold sidebar-title">Distribuição</span>
     </a>
   </div>
 
   <div class="list-group list-group-flush py-2 sidebar-nav">
-    <a href="{% url 'dashboard:home' %}" class="list-group-item list-group-item-action {% if request.resolver_match.namespace == 'dashboard' %}active{% endif %}">
-      <i class="fa fa-chart-line me-2"></i> Dashboard
+    <a href="{% url 'dashboard:home' %}"
+       class="list-group-item list-group-item-action {% if request.resolver_match.namespace == 'dashboard' %}active{% endif %}"
+       title="Dashboard" data-bs-toggle="tooltip" data-bs-placement="right">
+      <span class="item-main">
+        <i class="fa fa-chart-line nav-icon" aria-hidden="true"></i>
+        <span class="nav-text">Dashboard</span>
+      </span>
+      {# exemplo de badge opcional #}
+      {# <span class="nav-badge">3</span> #}
     </a>
-    <a href="{% url 'clientes:list' %}" class="list-group-item list-group-item-action {% if request.resolver_match.namespace == 'clientes' %}active{% endif %}">
-      <i class="fa fa-users me-2"></i> Clientes
+
+    <a href="{% url 'clientes:list' %}"
+       class="list-group-item list-group-item-action {% if request.resolver_match.namespace == 'clientes' %}active{% endif %}"
+       title="Clientes" data-bs-toggle="tooltip" data-bs-placement="right">
+      <span class="item-main">
+        <i class="fa fa-users nav-icon" aria-hidden="true"></i>
+        <span class="nav-text">Clientes</span>
+      </span>
+      {% with qtd=sidebar_counts.clientes|default:0 %}
+        {% if qtd > 0 %}<span class="nav-badge">{{ qtd }}</span>{% endif %}
+      {% endwith %}
     </a>
-    <a href="{% url 'produtos:list' %}" class="list-group-item list-group-item-action {% if request.resolver_match.namespace == 'produtos' %}active{% endif %}">
-      <i class="fa fa-box me-2"></i> Produtos
+
+    <a href="{% url 'produtos:list' %}"
+       class="list-group-item list-group-item-action {% if request.resolver_match.namespace == 'produtos' %}active{% endif %}"
+       title="Produtos" data-bs-toggle="tooltip" data-bs-placement="right">
+      <span class="item-main">
+        <i class="fa fa-box nav-icon" aria-hidden="true"></i>
+        <span class="nav-text">Produtos</span>
+      </span>
+      {% with qtd=sidebar_counts.produtos|default:0 %}
+        {% if qtd > 0 %}<span class="nav-badge">{{ qtd }}</span>{% endif %}
+      {% endwith %}
     </a>
-    <a href="{% url 'vendas:list' %}" class="list-group-item list-group-item-action {% if request.resolver_match.namespace == 'vendas' %}active{% endif %}">
-      <i class="fa fa-receipt me-2"></i> Vendas
+
+    <a href="{% url 'vendas:list' %}"
+       class="list-group-item list-group-item-action {% if request.resolver_match.namespace == 'vendas' %}active{% endif %}"
+       title="Vendas" data-bs-toggle="tooltip" data-bs-placement="right">
+      <span class="item-main">
+        <i class="fa fa-receipt nav-icon" aria-hidden="true"></i>
+        <span class="nav-text">Vendas</span>
+      </span>
+      {% with qtd=sidebar_counts.vendas|default:0 %}
+        {% if qtd > 0 %}<span class="nav-badge">{{ qtd }}</span>{% endif %}
+      {% endwith %}
     </a>
   </div>
 </nav>
+
+<!-- Handle fixo já existente permanece fora do <nav> -->
+<button id="sidebarToggle" class="sidebar-handle" type="button"
+        aria-label="Recolher barra lateral" aria-controls="appSidebar"
+        aria-expanded="true" title="Recolher/Expandir">
+  <i class="fa fa-chevron-left" aria-hidden="true"></i>
+</button>

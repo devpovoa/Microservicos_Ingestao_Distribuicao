@@ -301,3 +301,739 @@ html[data-theme="dark"] .card-table .pagination .page-item.active .page-link{
   color: #fff;
 }
 
+/* ============================= */
+/* Topbar Premium                */
+/* ============================= */
+
+/* Torna o topo fixo e com blur */
+.topbar-sticky {
+  position: sticky;
+  top: 0;
+  z-index: 1030;
+  backdrop-filter: saturate(1.2) blur(6px);
+  box-shadow: var(--shadow);
+}
+
+/* Marca/branding */
+.app-brand {
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--text);
+}
+.app-brand .brand-mark {
+  display: inline-grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  color: #fff;
+  background: linear-gradient(135deg, var(--brand-1), var(--brand-2));
+  box-shadow: 0 6px 18px color-mix(in oklab, var(--brand-1) 35%, transparent);
+}
+
+/* Busca “pill” mais elegante */
+.search-pill .form-control,
+.search-pill .input-group-text {
+  border-radius: 999px;
+}
+.search-pill .form-control:focus {
+  border-color: var(--brand-1);
+  box-shadow: 0 0 0 2px color-mix(in oklab, var(--brand-1) 40%, transparent);
+}
+
+/* Avatar do usuário no topo */
+.topbar .avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--surface-2);
+  transition: transform .2s ease;
+}
+.topbar .avatar:hover {
+  transform: scale(1.05);
+}
+
+/* Dropdown alinhado */
+.topbar .dropdown-menu {
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  background: var(--surface);
+}
+
+/* Tema dark específico */
+html[data-theme="dark"] .topbar-sticky {
+  background: rgba(15, 23, 42, 0.85); /* leve transparência */
+  box-shadow: var(--shadow);
+}
+html[data-theme="dark"] .app-brand {
+  color: var(--text);
+}
+html[data-theme="dark"] .topbar .dropdown-menu {
+  background: #0b1222;
+  border-color: var(--border);
+}
+
+/* ============================= */
+/* Topbar — Impact Pack v2       */
+/* ============================= */
+
+/* 1) Altura, espaçamento e elevação clara */
+.topbar.topbar-sticky {
+  position: sticky;
+  top: 0;
+  z-index: 1030;
+  /* gradiente translúcido para destacar do conteúdo */
+  background:
+    linear-gradient(180deg,
+      color-mix(in oklab, var(--surface) 90%, transparent) 0%,
+      color-mix(in oklab, var(--surface) 82%, transparent) 100%);
+  backdrop-filter: saturate(1.25) blur(12px);
+  box-shadow: 0 10px 30px rgba(0,0,0,.08); /* mais visível que var(--shadow) */
+  border-bottom: 1px solid var(--border);  /* fallback de separação */
+}
+
+/* 2) Linha de brilho sutil na base (puxa “premium”) */
+.topbar.topbar-sticky::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; bottom: -1px; height: 2px;
+  background: linear-gradient(90deg, var(--brand-1), var(--brand-2));
+  opacity: .55; /* pode subir para .75 se quiser mais destaque */
+  pointer-events: none;
+}
+
+/* 3) Altura real do topo */
+.topbar .container-fluid {
+  min-height: 64px; /* antes ~48px; fica mais “app” */
+  display: flex;
+  align-items: center;
+}
+
+/* 4) Marca mais marcante */
+.topbar .app-brand {
+  font-weight: 700;
+  letter-spacing: .2px;
+  color: var(--text);
+}
+.topbar .app-brand .brand-mark {
+  width: 32px; height: 32px; border-radius: 10px;
+  background: linear-gradient(135deg, var(--brand-1), var(--brand-2));
+  color: #fff;
+  box-shadow: 0 8px 22px color-mix(in oklab, var(--brand-1) 42%, transparent);
+}
+
+/* 5) Busca pill “preenchida” e mais larga em desktop */
+.topbar .search-pill {
+  min-width: clamp(220px, 30vw, 420px);
+}
+.topbar .search-pill .input-group-text,
+.topbar .search-pill .form-control {
+  border-radius: 999px !important;
+  background: color-mix(in oklab, var(--surface-2) 75%, white) !important;
+  border-color: var(--border) !important;
+}
+.topbar .search-pill .form-control:focus {
+  border-color: var(--brand-1) !important;
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--brand-1) 38%, transparent) !important;
+}
+
+/* 6) Botões mais contrastados no topo */
+.topbar .btn-soft {
+  background: color-mix(in oklab, var(--surface-2) 82%, white);
+  border-color: var(--border);
+  border-radius: 12px;
+}
+.topbar .btn-soft:hover {
+  background: color-mix(in oklab, var(--surface-2) 92%, white);
+}
+.topbar .btn-gradient {
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--brand-1), var(--brand-2));
+  border: 0;
+  box-shadow: 0 8px 18px color-mix(in oklab, var(--brand-2) 30%, transparent);
+}
+html[data-theme="dark"] .topbar .btn-gradient {
+  background: linear-gradient(135deg, var(--brand-2), var(--brand-1));
+}
+
+/* 7) Avatar com aro e hover perceptível */
+.topbar .avatar {
+  width: 34px; height: 34px;
+  border-radius: 999px;
+  border: 2px solid var(--surface-2);
+  box-shadow: 0 4px 10px rgba(0,0,0,.08);
+  transition: transform .18s ease, box-shadow .18s ease;
+}
+.topbar .avatar:hover {
+  transform: translateY(-1px) scale(1.03);
+  box-shadow: 0 8px 20px rgba(0,0,0,.12);
+}
+
+/* 8) Dropdown mais premium */
+.topbar .dropdown-menu {
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  box-shadow: 0 16px 40px rgba(0,0,0,.12);
+}
+.topbar .dropdown-item {
+  padding: .55rem .85rem;
+  border-radius: 10px;
+}
+.topbar .dropdown-item:hover {
+  background: color-mix(in oklab, var(--brand-1) 12%, transparent);
+  color: inherit;
+}
+
+/* 9) Modo escuro — reforço visual do topo */
+html[data-theme="dark"] .topbar.topbar-sticky {
+  background:
+    linear-gradient(180deg,
+      color-mix(in oklab, var(--surface) 88%, transparent) 0%,
+      color-mix(in oklab, var(--surface) 78%, transparent) 100%);
+  box-shadow: 0 14px 40px rgba(0,0,0,.45);
+  border-bottom-color: var(--border);
+}
+html[data-theme="dark"] .topbar .dropdown-menu {
+  background: #0b1222;
+  border-color: var(--border);
+}
+html[data-theme="dark"] .topbar .dropdown-item:hover {
+  background: color-mix(in oklab, var(--brand-2) 16%, transparent);
+}
+
+/* 10) Sinal temporário (retire após validar impacto) */
+/* header.topbar { outline: 2px dashed magenta !important; } */
+
+/* ============================= */
+/* Topbar — Impact Pack v3 Forte */
+/* ============================= */
+
+.topbar.topbar-sticky {
+  position: sticky;
+  top: 0;
+  z-index: 1050; /* acima de outros elementos */
+  /* fundo translúcido com gradiente forte */
+  background:
+    linear-gradient(180deg,
+      color-mix(in oklab, var(--brand-1) 15%, var(--surface)) 0%,
+      color-mix(in oklab, var(--brand-2) 25%, var(--surface)) 100%);
+  backdrop-filter: saturate(1.35) blur(18px); /* blur mais forte */
+  box-shadow: 0 12px 32px rgba(0,0,0,.25); /* sombra marcante */
+  border-bottom: none; /* remove linha cinza */
+}
+
+/* Linha de brilho intensa na base */
+.topbar.topbar-sticky::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; bottom: 0; height: 3px;
+  background: linear-gradient(90deg, var(--brand-1), var(--brand-2));
+  opacity: .9;
+  box-shadow: 0 0 12px color-mix(in oklab, var(--brand-1) 60%, transparent);
+  pointer-events: none;
+}
+
+/* Container mais alto */
+.topbar .container-fluid {
+  min-height: 72px;
+  display: flex;
+  align-items: center;
+}
+
+/* Marca/branding mais “neon” */
+.topbar .app-brand .brand-mark {
+  width: 36px; height: 36px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--brand-1), var(--brand-2));
+  box-shadow: 0 0 16px color-mix(in oklab, var(--brand-2) 65%, transparent);
+  font-size: 1rem;
+}
+
+/* Busca pill mais destacada */
+.topbar .search-pill .input-group-text,
+.topbar .search-pill .form-control {
+  border-radius: 999px !important;
+  background: color-mix(in oklab, var(--surface-2) 60%, white) !important;
+  border: 2px solid var(--brand-1) !important;
+}
+.topbar .search-pill .form-control:focus {
+  border-color: var(--brand-2) !important;
+  box-shadow: 0 0 0 4px color-mix(in oklab, var(--brand-2) 45%, transparent) !important;
+}
+
+/* Botões destacados */
+.topbar .btn-gradient {
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--brand-1), var(--brand-2));
+  color: #fff;
+  box-shadow: 0 6px 20px color-mix(in oklab, var(--brand-2) 50%, transparent);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .3px;
+}
+.topbar .btn-gradient:hover {
+  filter: brightness(1.15);
+  transform: translateY(-1px);
+}
+
+/* Avatar maior e com glow */
+.topbar .avatar {
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  border: 2px solid var(--brand-1);
+  box-shadow: 0 0 10px color-mix(in oklab, var(--brand-1) 60%, transparent);
+  transition: transform .25s ease, box-shadow .25s ease;
+}
+.topbar .avatar:hover {
+  transform: translateY(-2px) scale(1.08);
+  box-shadow: 0 0 18px color-mix(in oklab, var(--brand-2) 70%, transparent);
+}
+
+/* Dropdown premium */
+.topbar .dropdown-menu {
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  box-shadow: 0 20px 50px rgba(0,0,0,.25);
+}
+.topbar .dropdown-item:hover {
+  background: linear-gradient(90deg,
+    color-mix(in oklab, var(--brand-1) 20%, transparent),
+    color-mix(in oklab, var(--brand-2) 20%, transparent));
+  color: #fff;
+}
+
+/* Dark mode reforçado */
+html[data-theme="dark"] .topbar.topbar-sticky {
+  background:
+    linear-gradient(180deg,
+      color-mix(in oklab, var(--brand-1) 20%, var(--surface)) 0%,
+      color-mix(in oklab, var(--brand-2) 25%, var(--surface)) 100%);
+  box-shadow: 0 14px 40px rgba(0,0,0,.65);
+}
+
+/* ============================= */
+/* Topbar Layout — Espaçamento   */
+/* ============================= */
+
+/* container da topbar */
+.topbar .container-fluid {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;  /* distribui brand e ações */
+  gap: 1.5rem;                     /* espaço fixo entre grupos */
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
+}
+
+/* força espaçamento interno dos grupos */
+.topbar .d-flex.align-items-center.gap-2 {
+  gap: 1rem !important;
+}
+
+/* em telas largas: ainda mais espaço */
+@media (min-width: 992px) {
+  .topbar .container-fluid {
+    gap: 2rem;
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}
+
+/* ============================= */
+/* Topbar Grid (logo | search | actions) */
+/* ============================= */
+
+.topbar-grid {
+  display: grid;
+  grid-template-columns: auto 1fr auto; /* esq | centro flex | dir */
+  align-items: center;
+  gap: 1rem;
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
+  min-height: 72px; /* mantém altura premium */
+}
+
+/* Centro: alinha e limita largura da busca */
+.topbar-center {
+  display: flex;
+  justify-content: center;         /* centraliza dentro da coluna */
+  align-items: center;
+}
+
+.topbar-search-center {
+  width: min(720px, 86%);          /* limite agradável em telas largas */
+  margin-inline: auto;             /* garante centralização */
+}
+
+/* Direita: espaço confortável entre botões e avatar */
+.topbar-right {
+  gap: 0.75rem;
+}
+
+/* Em telas grandes, aumenta respiro lateral */
+@media (min-width: 1200px) {
+  .topbar-grid {
+    gap: 1.5rem;
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+  .topbar-search-center {
+    width: min(780px, 90%);
+  }
+}
+
+/* Em telas médias, mantém o centro forte */
+@media (min-width: 768px) and (max-width: 1199.98px) {
+  .topbar-search-center {
+    width: min(600px, 90%);
+  }
+}
+
+/* Mobile: grid vira “duas linhas” (left e right); a busca já está no collapse */
+@media (max-width: 767.98px) {
+  .topbar-grid {
+    grid-template-columns: 1fr auto; /* left expande, right gruda direita */
+    gap: .75rem;
+  }
+}
+
+/* ============================= */
+/* Sidebar recolhível (collapse) */
+/* ============================= */
+
+:root{
+  --sidebar-w-collapsed: 68px; /* largura quando recolhida */
+}
+
+.sidebar {
+  width: var(--sidebar-w);
+  position: sticky; top: 0; height: 100vh; overflow-y: auto;
+  background: var(--surface);
+  transition: width .22s ease;
+  will-change: width;
+}
+
+/* Conteúdo ao lado se ajusta automaticamente pois .layout-wrap é flex */
+/* Não precisa margin-left fixa */
+
+/* Transições internas para sumir texto com elegância */
+.sidebar .sidebar-title,
+.sidebar .nav-text {
+  transition: opacity .18s ease, transform .18s ease;
+  transform-origin: left center;
+}
+
+/* Ícones dos itens */
+.sidebar .nav-icon {
+  width: 1.25rem; text-align: center;
+}
+
+/* Estado recolhido (aplicado no <html> para ser global) */
+html.sidebar-collapsed .sidebar {
+  width: var(--sidebar-w-collapsed);
+}
+
+/* Some o título e os textos dos itens; mantém ícones centralizados */
+html.sidebar-collapsed .sidebar .sidebar-title,
+html.sidebar-collapsed .sidebar .nav-text {
+  opacity: 0; transform: scale(.95);
+  pointer-events: none;
+  width: 0; display: inline-block; /* evita “puxar” layout bruscamente */
+}
+
+/* Ajusta padding dos itens quando colapsado para centralizar ícones */
+html.sidebar-collapsed .sidebar .list-group-item {
+  padding-left: .9rem; padding-right: .9rem;
+}
+
+/* Remove espaçamento à direita dos ícones quando não há texto */
+html.sidebar-collapsed .sidebar .nav-icon {
+  margin-right: 0 !important;
+}
+
+/* Cabeçalho compacto */
+html.sidebar-collapsed .sidebar .sidebar-header {
+  padding-left: .6rem; padding-right: .6rem;
+}
+
+/* Botão de toggle com direção apropriada */
+#sidebarToggle .fa { transition: transform .2s ease; }
+html.sidebar-collapsed #sidebarToggle .fa {
+  transform: rotate(180deg);
+}
+
+/* Dark mode mantém coerência */
+html[data-theme="dark"].sidebar-collapsed .sidebar {
+  background: #0b1222;
+}
+
+/* Acessibilidade visual ao focar */
+.sidebar .list-group-item:focus-visible,
+#sidebarToggle:focus-visible {
+  outline: 2px solid color-mix(in oklab, var(--brand-1) 50%, transparent);
+  outline-offset: 2px;
+}
+
+/* ===== Sidebar recolhível: dimensões ===== */
+:root{
+  --sidebar-w: 240px;                /* já tinha, reafirmando */
+  --sidebar-w-collapsed: 68px;
+}
+
+/* Sidebar base (com transição) */
+.sidebar{
+  width: var(--sidebar-w);
+  position: sticky; top: 0; height: 100vh;
+  overflow-y: auto; overflow-x: visible;   /* evita cortar o conteúdo */
+  background: var(--surface);
+  transition: width .2s ease;
+  will-change: width;
+}
+html.sidebar-collapsed .sidebar{ width: var(--sidebar-w-collapsed); }
+
+/* Texto some com suavidade quando colapsa */
+.sidebar .sidebar-title, .sidebar .nav-text{
+  transition: opacity .16s ease, transform .16s ease;
+  transform-origin: left center;
+}
+html.sidebar-collapsed .sidebar .sidebar-title,
+html.sidebar-collapsed .sidebar .nav-text{
+  opacity: 0; transform: scale(.96);
+  pointer-events: none; width: 0; display: inline-block;
+}
+
+html.sidebar-collapsed .sidebar .list-group-item{ padding-left: .9rem; padding-right: .9rem; }
+html.sidebar-collapsed .sidebar .nav-icon{ margin-right: 0 !important; }
+html.sidebar-collapsed .sidebar .sidebar-header{ padding-left: .6rem; padding-right: .6rem; }
+
+/* ===== Handle fixo (bonito + sempre visível) ===== */
+.sidebar-handle{
+  position: fixed;                    /* independente do overflow de pais */
+  top: 96px;                          /* ajuste fino vertical */
+  left: calc(var(--sidebar-w) - 10px);/* encosta à borda da sidebar aberta */
+  z-index: 2001;
+
+  width: 36px; height: 36px;
+  display: grid; place-items: center;
+  border-radius: 999px;
+
+  color: #fff;
+  background: linear-gradient(135deg, var(--brand-1), var(--brand-2));
+  border: 1px solid color-mix(in oklab, var(--brand-1) 40%, transparent);
+  box-shadow: 0 12px 28px rgba(0,0,0,.20);
+
+  cursor: pointer;
+  transition: transform .18s ease, box-shadow .18s ease, left .2s ease;
+}
+.sidebar-handle:hover{
+  transform: translateY(-1px);
+  box-shadow: 0 16px 36px rgba(0,0,0,.26);
+}
+
+/* Quando colapsa, o handle acompanha a nova largura */
+html.sidebar-collapsed .sidebar-handle{
+  left: calc(var(--sidebar-w-collapsed) - 10px);
+}
+
+/* Chevron gira conforme estado */
+.sidebar-handle .fa{ transition: transform .2s ease; }
+html.sidebar-collapsed .sidebar-handle .fa{ transform: rotate(180deg); }
+
+/* Dark mode */
+html[data-theme="dark"] .sidebar-handle{
+  box-shadow: 0 16px 40px rgba(0,0,0,.55);
+  border-color: color-mix(in oklab, var(--brand-2) 35%, transparent);
+}
+
+/* Acessibilidade foco */
+.sidebar .list-group-item:focus-visible,
+#sidebarToggle:focus-visible{
+  outline: 2px solid color-mix(in oklab, var(--brand-1) 55%, transparent);
+  outline-offset: 2px;
+}
+
+/* === Centralizar o handle NA LINHA da divisão === */
+:root{
+  --handle-size: 36px;            /* diâmetro do botão (mantenha igual ao usado no handle) */
+}
+
+/* largura normal: centro do handle coincide com a borda direita da sidebar */
+.sidebar-handle{
+  left: calc(var(--sidebar-w) - var(--handle-size) / 2) !important;
+  width: var(--handle-size);
+  height: var(--handle-size);
+}
+
+/* recolhida: mesmo cálculo com a largura recolhida */
+html.sidebar-collapsed .sidebar-handle{
+  left: calc(var(--sidebar-w-collapsed) - var(--handle-size) / 2) !important;
+}
+
+/* === Centralizar verticalmente o handle na linha média do conteúdo === */
+:root{
+  --topbar-h: 72px;      /* altura real da sua topbar */
+  --handle-size: 36px;   /* diâmetro do botão */
+}
+
+/* Centro da área visível abaixo da topbar */
+.sidebar-handle{
+  top: calc(
+    var(--topbar-h)                       /* começa abaixo da topbar */
+    + (100vh - var(--topbar-h)) / 2       /* vai até o meio da área útil */
+    - var(--handle-size) / 2              /* ajusta pelo tamanho do handle */
+  );
+}
+
+/* Ajuste fino em telas muito baixas (evita encostar nos cards) */
+@media (max-height: 640px){
+  .sidebar-handle{
+    top: calc(var(--topbar-h) + 40vh - var(--handle-size)/2);
+  }
+}
+
+/* ============================= */
+/* Sidebar – visual premium      */
+/* ============================= */
+
+.sidebar-nav .list-group-item{
+  position: relative;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: .5rem;
+  border: 0; border-radius: 12px;
+  margin: .15rem .45rem;
+  padding: .6rem .9rem;
+  color: var(--text);
+  background: transparent;
+  transition: background-color .12s ease, color .12s ease, box-shadow .12s ease;
+}
+
+.sidebar-nav .list-group-item .item-main{
+  display: inline-flex; align-items: center; gap: .5rem;
+  min-width: 0;
+}
+.sidebar-nav .nav-icon{
+  width: 1.25rem; text-align: center;
+}
+
+/* Hover sutil */
+.sidebar-nav .list-group-item:hover{
+  background: color-mix(in oklab, var(--brand-1) 10%, transparent);
+}
+
+/* Active com gradiente e glow */
+.sidebar-nav .list-group-item.active{
+  background: linear-gradient(135deg, var(--brand-1), var(--brand-2));
+  color: #fff;
+  box-shadow: 0 10px 22px color-mix(in oklab, var(--brand-2) 35%, transparent);
+}
+.sidebar-nav .list-group-item.active .nav-icon{ filter: brightness(1.05); }
+
+/* Badge (contador) */
+.sidebar-nav .nav-badge{
+  display: inline-block;
+  min-width: 1.35rem; height: 1.2rem;
+  padding: 0 .45rem;
+  border-radius: 999px;
+  font-size: .72rem; font-weight: 700; line-height: 1.2rem;
+  text-align: center;
+  color: #fff;
+  background: linear-gradient(135deg, var(--brand-1), var(--brand-2));
+  box-shadow: 0 4px 12px color-mix(in oklab, var(--brand-1) 35%, transparent);
+}
+
+/* Colapsada: badge vira "dot" à direita do item */
+html.sidebar-collapsed .sidebar .nav-badge{
+  position: absolute;
+  right: .35rem; top: 50%; transform: translateY(-50%);
+  width: .5rem; height: .5rem; min-width: 0; padding: 0;
+  border-radius: 999px;
+  font-size: 0; line-height: 0;
+  box-shadow: 0 0 0 2px var(--surface); /* halo para destacar */
+}
+
+/* Dark mode coerente */
+html[data-theme="dark"] .sidebar-nav .list-group-item:hover{
+  background: color-mix(in oklab, var(--brand-2) 12%, transparent);
+}
+
+/* ============================= */
+/* Sidebar – marcador & interações */
+/* ============================= */
+
+/* Base necessária para posicionar o marcador */
+.sidebar-nav .list-group-item{
+  position: relative;
+  overflow: hidden; /* evita que o brilho vaze demais */
+  will-change: background-color, box-shadow;
+}
+
+/* Marcador vertical (esquerda) */
+.sidebar-nav .list-group-item::before{
+  content: "";
+  position: absolute;
+  left: .35rem;
+  top: 50%;
+  width: 3px;
+  height: 70%;
+  transform: translateY(-50%) scaleY(0);
+  transform-origin: center;
+  border-radius: 3px;
+  background: linear-gradient(180deg, var(--brand-1), var(--brand-2));
+  box-shadow: 0 0 10px color-mix(in oklab, var(--brand-1) 30%, transparent);
+  opacity: 0;
+  transition: transform .18s ease, opacity .18s ease;
+}
+
+/* Hover: marcador curto, discreto */
+.sidebar-nav .list-group-item:hover::before{
+  transform: translateY(-50%) scaleY(.45);
+  opacity: .75;
+}
+
+/* Active: marcador cheio e mais espesso */
+.sidebar-nav .list-group-item.active::before{
+  left: .25rem;
+  width: 4px;
+  transform: translateY(-50%) scaleY(1);
+  opacity: 1;
+}
+
+/* Micro-animação do ícone no hover/active */
+.sidebar-nav .list-group-item .nav-icon{
+  transition: transform .12s ease, filter .12s ease, opacity .12s ease;
+}
+.sidebar-nav .list-group-item:hover .nav-icon{
+  transform: translateX(2px);
+  filter: brightness(1.05);
+}
+.sidebar-nav .list-group-item.active .nav-icon{
+  transform: translateX(3px);
+  filter: brightness(1.1);
+}
+
+/* Foco visível e suave */
+.sidebar-nav .list-group-item:focus-visible{
+  outline: none;
+  box-shadow:
+    0 0 0 2px color-mix(in oklab, var(--brand-1) 55%, transparent),
+    0 6px 18px color-mix(in oklab, var(--brand-2) 20%, transparent);
+}
+
+/* Estado recolhido: manter marcador visível e central nos itens */
+html.sidebar-collapsed .sidebar .list-group-item::before{
+  left: .2rem;
+  height: 60%;
+}
+
+/* Preferência do usuário: reduz animações */
+@media (prefers-reduced-motion: reduce){
+  .sidebar-nav .list-group-item::before,
+  .sidebar-nav .list-group-item .nav-icon{
+    transition: none !important;
+  }
+}
+

@@ -1,4 +1,5 @@
 {% load static %}
+{% now "U" as ts %}
 <!doctype html>
 <html lang="pt-br">
   <head>
@@ -12,6 +13,16 @@
         html.classList.add('no-theme-transition');
       })();
     </script>
+    <script>
+      (function () {
+        try {
+          if (localStorage.getItem('sidebar_collapsed') === '1') {
+            document.documentElement.classList.add('sidebar-collapsed');
+          }
+        } catch(e){}
+      })();
+    </script>
+
 
     <meta charset="utf-8">
     <title>{% block title %}Distribuição · Painel{% endblock %}</title>
@@ -22,6 +33,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
 
     <!-- Estilos do app (premium + dark) -->
+    <link href="{% static 'css/app.css' %}?v={{ ts }}" rel="stylesheet">
     <link href="{% static 'css/app.css' %}" rel="stylesheet">
     {% block extra_css %}{% endblock %}
   </head>
@@ -93,7 +105,64 @@
         });
       })();
     </script>
+    <script>
+      (function () {
+        const STORAGE_KEY = "sidebar_collapsed";
+        const html = document.documentElement;
+        const btn  = document.getElementById("sidebarToggle");
+        const sidebar = document.getElementById("appSidebar");
 
+        function applyState(collapsed) {
+          if (collapsed) {
+            html.classList.add("sidebar-collapsed");
+            if (btn) { btn.setAttribute("aria-expanded", "false"); btn.title = "Expandir"; }
+            if (sidebar) sidebar.setAttribute("aria-expanded", "false");
+          } else {
+            html.classList.remove("sidebar-collapsed");
+            if (btn) { btn.setAttribute("aria-expanded", "true"); btn.title = "Recolher"; }
+            if (sidebar) sidebar.setAttribute("aria-expanded", "true");
+          }
+          try { localStorage.setItem(STORAGE_KEY, collapsed ? "1" : "0"); } catch(e){}
+        }
+        if (typeof window.__sidebarTooltipsUpdate === 'function') window.__sidebarTooltipsUpdate();
+
+        document.addEventListener("DOMContentLoaded", function(){
+          let saved = "0";
+          try { saved = localStorage.getItem(STORAGE_KEY) || "0"; } catch(e){}
+          applyState(saved === "1");
+
+          if (btn) {
+            btn.addEventListener("click", function(){
+              const collapsed = !html.classList.contains("sidebar-collapsed");
+              applyState(collapsed);
+            });
+          }
+        });
+      })();
+    </script>
+    <script>
+      (function(){
+        let tts = [];
+        function updateTooltips(){
+          // limpa os existentes
+          tts.forEach(t => t.dispose());
+          tts = [];
+          const collapsed = document.documentElement.classList.contains('sidebar-collapsed');
+          if (!collapsed) return;
+          document.querySelectorAll('.sidebar [data-bs-toggle="tooltip"]').forEach(el=>{
+            tts.push(new bootstrap.Tooltip(el, {
+              placement: 'right',
+              boundary: 'viewport',
+              fallbackPlacements: ['right', 'bottom'],
+              delay: { show: 60, hide: 40 }
+            }));
+          });
+        }
+        // expõe para o script do toggle chamar também
+        window.__sidebarTooltipsUpdate = updateTooltips;
+        document.addEventListener('DOMContentLoaded', updateTooltips);
+      })();
+    </script>
     <script src="{% static 'js/theme-charts.js' %}"></script>
     {% block extra_js %}{% endblock %}
   </body>

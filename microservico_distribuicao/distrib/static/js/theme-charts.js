@@ -1,4 +1,3 @@
-// === Chart.js tema dinâmico (lê CSS vars) ===
 function cssVar(name){ return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
 function chartPalette(){
   return {
