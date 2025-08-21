@@ -64,12 +64,12 @@
               </td>
 
               <td>
-                R$ {{ rec|brl }}
+                {{ rec|brl }}
               </td>
 
               <td>
                 {% if qtd %}
-                  R$ {{ rec|div0:qtd|brl }}
+                   {{ rec|div0:qtd|brl }}
                 {% else %}
                   R$ 0,00
                 {% endif %}

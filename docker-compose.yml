@@ -81,8 +81,6 @@ services:
     networks:
       - micro_net
 
-  # ⛔ REMOVIDO: celery_worker_ingest
-  # O ingestor é só publisher, não precisa (nem deve) ter worker Celery.
 
   django_distrib:
     build: ./microservico_distribuicao

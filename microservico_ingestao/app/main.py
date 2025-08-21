@@ -1,19 +1,20 @@
-from datetime import datetime
 import threading
 from contextlib import asynccontextmanager
+from datetime import datetime
 from typing import List
+from zoneinfo import ZoneInfo
 
-from fastapi import FastAPI, Depends, Form, HTTPException
-from sqlalchemy.orm import Session
-from pydantic import BaseModel
-
-from app.core.database import Base, engine, SessionLocal
+from app.api.schemas import (ClienteResponse, CompraCreate, CompraResponse,
+                             ProdutoResponse)
 from app.core.config import settings
-from app.core.security import verify_token, create_access_token
+from app.core.database import Base, SessionLocal, engine
+from app.core.security import create_access_token, verify_token
+from app.models.temp_models import ClienteTemp, CompraTemp, ProdutoTemp
+from app.tasks.publisher import publish_processed_data
 from app.workers.file_watcher import start_file_watcher
-from app.models.temp_models import ClienteTemp, ProdutoTemp, CompraTemp
-from app.api.schemas import ClienteResponse, ProdutoResponse, CompraResponse, CompraCreate
-
+from fastapi import Depends, FastAPI, Form, HTTPException
+from pydantic import BaseModel
+from sqlalchemy.orm import Session
 
 # Cria as tabelas no primeiro start
 Base.metadata.create_all(bind=engine)
@@ -109,9 +110,8 @@ def listar_compras(user=Depends(verify_token), db: Session = Depends(get_db)):
 @app.post("/compras", response_model=CompraCreate, summary="Criar uma venda via API")
 def criar_compra(compra_data: CompraCreate, user=Depends(verify_token), db: Session = Depends(get_db)):
 
-    data_hora = datetime.now()
+    data_hora = datetime.now(ZoneInfo("America/Sao_Paulo"))
 
-    # Verifica cliente pelo CPF/CNPJ ou nome.
     cliente = None
     if compra_data.cliente.cpf_cnpj:
         cliente = db.query(ClienteTemp).filter_by(
@@ -125,7 +125,6 @@ def criar_compra(compra_data: CompraCreate, user=Depends(verify_token), db: Sess
         db.commit()
         db.refresh(cliente)
 
-    # Verifica ou cria produto.
     produto = db.query(ProdutoTemp).filter_by(
         nome_produto=compra_data.produto.nome_produto).first()
     if not produto:
@@ -134,7 +133,7 @@ def criar_compra(compra_data: CompraCreate, user=Depends(verify_token), db: Sess
         db.commit()
         db.refresh(produto)
 
-    # Criação da compra.
+    # Cria compra TEMP
     valor_total = compra_data.quantidade * compra_data.valor_unitario
     compra = CompraTemp(
         cliente_id=cliente.id,
@@ -148,5 +147,30 @@ def criar_compra(compra_data: CompraCreate, user=Depends(verify_token), db: Sess
     db.add(compra)
     db.commit()
     db.refresh(compra)
+
+    payload = {
+        "id": compra.id,
+        "cliente": {
+            "id": cliente.id,
+            "nome": cliente.nome,
+            "email": cliente.email,
+            "telefone": cliente.telefone,
+            "cpf_cnpj": cliente.cpf_cnpj,
+            "endereco_completo": cliente.endereco_completo,
+        },
+        "produto": {
+            "id": produto.id,
+            "nome_produto": produto.nome_produto,
+        },
+        "quantidade": int(compra.quantidade),
+        "valor_unitario": float(compra.valor_unitario),
+        "valor_total": float(compra.valor_total),
+        "data_hora": compra.data_hora.isoformat(),
+        "forma_pagamento": compra.forma_pagamento,
+    }
+
+    task_id = publish_processed_data(payload)
+    print(
+        f"[API] Publicado no RabbitMQ (processed_data). task_id={task_id}", flush=True)
 
     return compra

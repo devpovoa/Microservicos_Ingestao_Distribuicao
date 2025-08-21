@@ -8,7 +8,6 @@ from app.core.config import settings
 from app.core.database import SessionLocal
 from app.models.temp_models import ClienteTemp, CompraTemp, ProdutoTemp
 from app.tasks.publisher import publish_processed_data
-from sqlalchemy.orm import Session
 
 DATA_PATH = "/app/data"
 PROCESSED_PATH = os.path.join(DATA_PATH, "processed")
