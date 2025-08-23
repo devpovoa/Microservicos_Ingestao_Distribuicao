@@ -266,12 +266,12 @@ Essas imagens/GIFs dão clareza sobre o fluxo completo: da ingestão de dados at
 ### 1️⃣ Ingestão via FastAPI
 
 - **Swagger UI** exibindo endpoints protegidos por JWT.  
-  ![b5537f6e-0097-438f-b898-b7de7b76432b](file:///C:/Users/Thiago%20Povoa/OneDrive/Imagens/Typedown/b5537f6e-0097-438f-b898-b7de7b76432b.png)
-  ![edd67570-d96b-4d9a-9d0e-a69731d54834](file:///C:/Users/Thiago%20Povoa/OneDrive/Imagens/Typedown/edd67570-d96b-4d9a-9d0e-a69731d54834.png)
+  ![](file://wsl.localhost/Ubuntu/mnt/wsl/PHYSICALDRIVE4/Projects/Projetos_Python/Microservico_excel/docs/images/swagger.png.png)
+  ![loading-ag-7782](file://wsl.localhost/Ubuntu/mnt/wsl/PHYSICALDRIVE4/Projects/Projetos_Python/Microservico_excel/docs/images/jwt.png.png)
 
 - Exemplo de ingestão de dados via **JSON externo**.  
-  ![7519a8e9-d291-433f-a213-f0612be9957a](file:///C:/Users/Thiago%20Povoa/OneDrive/Imagens/Typedown/7519a8e9-d291-433f-a213-f0612be9957a.png)
-  ![fff29710-f791-440a-9771-7e91c172c56e](file:///C:/Users/Thiago%20Povoa/OneDrive/Imagens/Typedown/fff29710-f791-440a-9771-7e91c172c56e.png)
+  ![](file://wsl.localhost/Ubuntu/mnt/wsl/PHYSICALDRIVE4/Projects/Projetos_Python/Microservico_excel/docs/images/api_dados.png.png)
+  ![](file://wsl.localhost/Ubuntu/mnt/wsl/PHYSICALDRIVE4/Projects/Projetos_Python/Microservico_excel/docs/images/get_api.png.png)
 
 - Upload de arquivo `vendas.xlsx` sendo processado.
   
