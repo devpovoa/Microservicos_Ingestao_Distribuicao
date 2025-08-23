@@ -311,6 +311,94 @@ Essas imagens/GIFs dão clareza sobre o fluxo completo: da ingestão de dados at
 - Área administrativa para gerenciar clientes, produtos e compras.  
 - Exemplo de CRUD básico (inserção, edição ou listagem).  
 
-<!-- Adicione aqui: print do Django Admin -->
+---
 
-<!-- Adicione aqui: print mostrando edição de cliente/produto -->
+## 🛣 Roadmap
+
+Este projeto está em evolução contínua.  
+Abaixo estão os próximos passos planejados, divididos em fases:
+
+### ✅ Fase 1 — Estrutura Base (Concluída)
+
+- [x] Configuração do ambiente com **Docker Compose**
+- [x] Microserviço de **Ingestão (FastAPI + Pandas + SQLAlchemy)**
+- [x] **API externa (JSON) com JWT** para ingestão (FastAPI)
+- [x] Publicação de mensagens em fila **RabbitMQ**
+- [x] Microserviço de **Distribuição (Django)**
+- [x] Consumo assíncrono com **Celery Worker**
+- [x] Persistência em bancos **PostgreSQL** independentes
+
+### ✅ Fase 2 — Funcionalidades Intermediárias (Concluída)
+
+- [x] **Dashboard Django** com KPIs e gráficos (Chart.js / Bootstrap)
+- [x] **Relatórios em PDF** com ReportLab
+- [x] **Listagens avançadas** com filtros e paginação
+- [x] **Exportação de relatórios em Excel/CSV**
+
+### 🚀 Fase 3 — Melhorias Avançadas (Planejado)
+
+- [ ] Testes automatizados com **pytest**
+- [ ] **CI/CD com GitHub Actions** (lint, build, testes)
+- [ ] Observabilidade: métricas com **Prometheus/Grafana**
+- [ ] Logs estruturados (JSON) e monitoramento centralizado
+- [ ] Deploy em nuvem (Render/Heroku/DigitalOcean)
+
+---
+
+## 🤝 Contribuição
+
+Contribuições são bem-vindas!  
+Se você quiser sugerir melhorias, abrir issues ou enviar PRs, fique à vontade.  
+
+Este projeto segue o padrão de commits **Conventional Commits** para manter histórico limpo e organizado.
+
+### 📌 Padrão de Commits
+
+Use o formato:
+
+### 🔹 Exemplos
+
+- `feat(ingestao): adicionar endpoint para upload de JSON com JWT`
+- `fix(distribuicao): corrigir bug no consumo de mensagens da fila processed_data`
+- `docs(readme): adicionar diagrama da arquitetura`
+- `chore(ci): configurar GitHub Actions para rodar testes`
+
+### 🔹 Tipos mais usados
+
+- **feat** → nova funcionalidade  
+- **fix** → correção de bug  
+- **docs** → documentação  
+- **style** → mudanças de formatação/código sem impacto funcional  
+- **refactor** → refatoração de código sem mudar funcionalidade  
+- **test** → adição/correção de testes  
+- **chore** → manutenção/infraestrutura  
+
+---
+
+---
+## 📄 Licença
+
+Este projeto está licenciado sob a licença **MIT** – veja o arquivo [LICENSE](LICENSE) para mais detalhes.  
+Sinta-se livre para usar, modificar e compartilhar, mantendo a referência ao autor.
+
+---
+
+## 👨‍💻 Autor
+
+Desenvolvido por **Thiago Povoa**  
+
+- 🌐 [Em breve](https://github.com/devpovoa)
+- 💼 [LinkedIn](https://www.linkedin.com/in/thiago-povoa-dev)  
+- 🐙 [GitHub](https://github.com/devpovoa)  
+
+---
+
+---
+
+## 🙏 Agradecimentos
+
+Um agradecimento especial ao meu mentor **Ricardo Fernandes** pelo direcionamento técnico, feedbacks francos e suporte contínuo durante essa minha trajetória.  
+
+- 💼 [LinkedIn — José Ricardo Fernandes](https://www.linkedin.com/in/jose-ricardo-fernandes/)
+
+
