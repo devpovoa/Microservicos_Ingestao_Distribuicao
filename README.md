@@ -393,8 +393,6 @@ Desenvolvido por **Thiago Povoa**
 
 ---
 
----
-
 ## 🙏 Agradecimentos
 
 Um agradecimento especial ao meu mentor **Ricardo Fernandes** pelo direcionamento técnico, feedbacks francos e suporte contínuo durante essa minha trajetória.  
