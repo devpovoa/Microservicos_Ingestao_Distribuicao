@@ -1,39 +1,142 @@
-<nav class="navbar navbar-expand-lg public-navbar shadow-sm">
+{% load static %}
+<nav class="navbar navbar-expand-lg public-navbar shadow-sm" role="navigation" aria-label="Navegação principal">
   <div class="container">
-    <a class="navbar-brand d-flex align-items-center" href="/">
-      <span class="brand-chip me-2"><i class="fa fa-bolt"></i></span>
+    <!-- Marca -->
+    <a class="navbar-brand d-flex align-items-center" href="{% url 'dashboard:home' %}">
+      <span class="brand-chip me-2" aria-hidden="true"><i class="fa fa-bolt"></i></span>
       <span class="fw-semibold">Distribuição</span>
     </a>
-    <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navPublic">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div id="navPublic" class="collapse navbar-collapse">
-      <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
-        <li class="nav-item"><a class="nav-link" href="{% url 'clientes:list' %}"><i class="fa fa-users me-1"></i> Clientes</a></li>
-        <li class="nav-item"><a class="nav-link" href="{% url 'produtos:list' %}"><i class="fa fa-box me-1"></i> Produtos</a></li>
-        <li class="nav-item"><a class="nav-link" href="{% url 'vendas:list' %}"><i class="fa fa-receipt me-1"></i> Vendas</a></li>
 
-        <li class="nav-item ms-lg-2">
-          <button id="themeTogglePublic" class="btn btn-pill btn-gradient" type="button" title="Tema claro/escuro">
-            <i id="themeIconPublic" class="fa fa-moon theme-icon" aria-hidden="true"></i>
-            <span class="visually-hidden" id="themeLabelPublic">Alternar tema</span>
+    {% with url_name=request.resolver_match.url_name|default:'' %}
+      {% if url_name in 'login logout password_reset password_reset_done password_reset_confirm password_reset_complete' %}
+        {# --- Navbar mínima (páginas públicas de auth) --- #}
+        <div class="d-flex ms-auto align-items-center gap-2">
+          <button class="navbar-toggler d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#navPublic" aria-label="Abrir navegação">
+            <span class="navbar-toggler-icon"></span>
           </button>
-        </li>
+          <button class="btn btn-pill btn-gradient" type="button" id="themeToggle" title="Tema claro/escuro">
+            <i class="fa fa-moon theme-icon" aria-hidden="true"></i>
+            <span class="visually-hidden">Alternar tema</span>
+          </button>
+        </div>
+      {% else %}
+        {# --- Navbar completa (app autenticado) --- #}
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navPublic" aria-controls="navPublic" aria-expanded="false" aria-label="Abrir navegação">
+          <span class="navbar-toggler-icon"></span>
+        </button>
 
-        {% if user.is_authenticated %}
-          <li class="nav-item ms-lg-2">
-            <a class="btn btn-pill btn-soft" href="{% url 'dashboard:home' %}">
-              <i class="fa fa-gauge-high me-1"></i> Painel
-            </a>
-          </li>
-        {% else %}
-          <li class="nav-item ms-lg-2">
-            <a class="btn btn-pill btn-cta" href="{% url 'login' %}">
-              <i class="fa fa-right-to-bracket me-1"></i> Entrar
-            </a>
-          </li>
-        {% endif %}
-      </ul>
-    </div>
+        <div id="navPublic" class="collapse navbar-collapse">
+          <!-- Links à esquerda (ou central) -->
+          <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
+            <li class="nav-item">
+              <a class="nav-link {% if url_name|default:'' == 'clientes:list' %}active{% endif %}"
+                 href="{% url 'clientes:list' %}"
+                 {% if url_name == 'clientes:list' %}aria-current="page"{% endif %}>
+                <i class="fa fa-users me-1" aria-hidden="true"></i> Clientes
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link {% if url_name == 'produtos:list' %}active{% endif %}"
+                 href="{% url 'produtos:list' %}"
+                 {% if url_name == 'produtos:list' %}aria-current="page"{% endif %}>
+                <i class="fa fa-box me-1" aria-hidden="true"></i> Produtos
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link {% if url_name == 'vendas:list' %}active{% endif %}"
+                 href="{% url 'vendas:list' %}"
+                 {% if url_name == 'vendas:list' %}aria-current="page"{% endif %}>
+                <i class="fa fa-receipt me-1" aria-hidden="true"></i> Vendas
+              </a>
+            </li>
+
+            <!-- Toggle de tema -->
+            <li class="nav-item ms-lg-2">
+              <button id="themeToggle" class="btn btn-pill btn-gradient" type="button" title="Tema claro/escuro">
+                <i class="fa fa-moon theme-icon" aria-hidden="true"></i>
+                <span class="visually-hidden">Alternar tema</span>
+              </button>
+            </li>
+
+            {% if user.is_authenticated %}
+              <!-- Dropdown do usuário -->
+              <li class="nav-item dropdown ms-lg-2">
+                <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  <span class="avatar-circle me-2" aria-hidden="true">
+                    {{ user.get_full_name|default:user.username|first|upper }}
+                  </span>
+                  <span class="d-none d-lg-inline">{{ user.get_short_name|default:user.username }}</span>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
+                  <li>
+                    <a class="dropdown-item" href="{% url 'dashboard:home' %}">
+                      <i class="fa fa-gauge-high me-2" aria-hidden="true"></i> Painel
+                    </a>
+                  </li>
+                  <li><hr class="dropdown-divider"></li>
+                  <li>
+                    <a class="dropdown-item" href="{% url 'password_change' %}">
+                      <i class="fa fa-key me-2" aria-hidden="true"></i> Trocar senha
+                    </a>
+                  </li>
+                  <li>
+                    <!-- Logout via POST, seguro -->
+                    <form method="post" action="{% url 'logout' %}" class="px-3 py-1">
+                      {% csrf_token %}
+                      <button type="submit" class="dropdown-item text-danger px-0">
+                        <i class="fa fa-right-from-bracket me-2" aria-hidden="true"></i> Sair
+                      </button>
+                    </form>
+                  </li>
+                </ul>
+              </li>
+            {% else %}
+              <li class="nav-item ms-lg-2">
+                <a class="btn btn-pill btn-cta" href="{% url 'login' %}">
+                  <i class="fa fa-right-to-bracket me-1" aria-hidden="true"></i> Entrar
+                </a>
+              </li>
+            {% endif %}
+          </ul>
+        </div>
+      {% endif %}
+    {% endwith %}
   </div>
 </nav>
+
+{# Script mínimo para o toggle de tema e “active” #}
+<script>
+(function(){
+  // Persistência do tema (html[data-theme])
+  const root = document.documentElement;
+  const btns = document.querySelectorAll('#themeToggle');
+  function setTheme(mode){
+    root.setAttribute('data-theme', mode);
+    localStorage.setItem('theme', mode);
+    document.querySelectorAll('.theme-icon').forEach(icon=>{
+      icon.classList.toggle('fa-moon', mode !== 'dark');
+      icon.classList.toggle('fa-sun',  mode === 'dark');
+    });
+  }
+  // Carrega preferências
+  const saved = localStorage.getItem('theme');
+  const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  setTheme(saved || (prefersDark ? 'dark' : 'light'));
+
+  btns.forEach(btn => btn.addEventListener('click', ()=>{
+    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    setTheme(next);
+  }));
+
+  // Marca “active” por pathname quando a url_name não bate
+  try {
+    const path = window.location.pathname.replace(/\/+$/, '');
+    document.querySelectorAll('.navbar .nav-link').forEach(a=>{
+      const href = a.getAttribute('href')?.replace(/\/+$/, '');
+      if (href && href === path){
+        a.classList.add('active'); a.setAttribute('aria-current','page');
+      }
+    });
+  } catch(_) {}
+})();
+</script>

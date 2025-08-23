@@ -1,45 +1,157 @@
 {% extends "base.html" %}
+{% load static %}
 {% block title %}Acesse sua conta · Distribuição{% endblock %}
 
 {% block content %}
 <div class="row justify-content-center">
   <div class="col-sm-10 col-md-8 col-lg-4">
     <div class="auth-card p-4">
+      <!-- Cabeçalho -->
       <div class="d-flex align-items-start gap-2 mb-3">
-        <div class="brand-chip"><i class="fa fa-bolt"></i></div>
+        <div class="brand-chip" aria-hidden="true"><i class="fa fa-bolt"></i></div>
         <div>
           <h1 class="h5 mb-1">Acesse sua conta</h1>
-          <div class="small text-muted">Bem-vindo ao painel de distribuição</div>
+          <p class="small text-muted mb-0">Bem-vindo ao painel de distribuição</p>
         </div>
       </div>
 
-      <form method="post" novalidate>
-        {% csrf_token %}
+      <!-- Mensagens do Django (success/error/info) -->
+      {% if messages %}
         <div class="mb-2">
-          <label class="form-label">Usuário</label>
-          <input type="text" name="username" autofocus required id="id_username" class="form-control" placeholder="Seu usuário">
+          {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} py-2 mb-2">{{ message }}</div>
+          {% endfor %}
         </div>
-        <div class="mb-3">
-          <label class="form-label">Senha</label>
-          <input type="password" name="password" required id="id_password" class="form-control" placeholder="Sua senha">
+      {% endif %}
+
+      <!-- Erros não relacionados a campos -->
+      {% if form.non_field_errors %}
+        <div class="alert alert-danger py-2">
+          {% for err in form.non_field_errors %}{{ err }}{% endfor %}
+        </div>
+      {% endif %}
+
+      <form method="post" novalidate class="needs-validation" id="login-form" {% if next %}action="?next={{ next|urlencode }}"{% endif %}>
+        {% csrf_token %}
+        {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+
+        <!-- Usuário -->
+        <div class="mb-2">
+          <label class="form-label" for="id_username">Usuário</label>
+          <input
+            type="text"
+            name="username"
+            id="id_username"
+            class="form-control {% if form.username.errors %}is-invalid{% endif %}"
+            placeholder="Seu usuário"
+            required
+            autocomplete="username"
+            inputmode="text"
+            value="{{ form.username.value|default_if_none:'' }}"
+          >
+          {% if form.username.errors %}
+            <div class="invalid-feedback">
+              {% for err in form.username.errors %}{{ err }}{% endfor %}
+            </div>
+          {% else %}
+            <div class="form-text">Use seu nome de usuário corporativo.</div>
+          {% endif %}
         </div>
 
-        {% if form.errors %}
+        <!-- Senha -->
+        <div class="mb-3">
+          <label class="form-label" for="id_password">Senha</label>
+          <div class="input-group">
+            <input
+              type="password"
+              name="password"
+              id="id_password"
+              class="form-control {% if form.password.errors %}is-invalid{% endif %}"
+              placeholder="Sua senha"
+              required
+              autocomplete="current-password"
+            >
+            <button class="btn btn-outline-secondary" type="button" id="togglePassword" aria-label="Mostrar ou ocultar senha">
+              <i class="fa fa-eye" aria-hidden="true"></i>
+            </button>
+            {% if form.password.errors %}
+              <div class="invalid-feedback d-block">
+                {% for err in form.password.errors %}{{ err }}{% endfor %}
+              </div>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Lembrar sessão (opcional) -->
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="1" id="remember" name="remember">
+            <label class="form-check-label" for="remember">Manter conectado</label>
+          </div>
+          <a class="small" href="{% url 'password_reset' %}">Esqueci minha senha</a>
+        </div>
+
+        <!-- Erro genérico ao falhar login -->
+        {% if form.errors and not form.non_field_errors %}
           <div class="alert alert-danger py-2">Usuário ou senha inválidos.</div>
         {% endif %}
 
+        <!-- CTA -->
         <div class="d-grid">
-          <button class="btn btn-cta btn-pill" type="submit">
-            <i class="fa fa-right-to-bracket me-2"></i> Acessar
+          <button class="btn btn-cta btn-pill" type="submit" id="submitBtn">
+            <span class="btn-label">
+              <i class="fa fa-right-to-bracket me-2"></i> Acessar
+            </span>
+            <span class="btn-loading spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
           </button>
         </div>
+
+        <!-- reCAPTCHA (se for usar, descomente e integre) -->
+        {# <div class="mt-3">{% include "partials/_recaptcha.html" %}</div> #}
       </form>
 
       <div class="d-flex justify-content-between mt-3 small">
-        <a href="{% url 'password_reset' %}">Esqueci minha senha</a>
         <a href="{% url 'dashboard:home' %}">Voltar ao site</a>
+        <span class="text-muted">v{{ VERSION|default:"1.0" }}</span>
       </div>
     </div>
   </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function(){
+  // Mostrar/ocultar senha
+  const toggle = document.getElementById('togglePassword');
+  const input  = document.getElementById('id_password');
+  if (toggle && input){
+    toggle.addEventListener('click', () => {
+      const isPwd = input.getAttribute('type') === 'password';
+      input.setAttribute('type', isPwd ? 'text' : 'password');
+      toggle.querySelector('i')?.classList.toggle('fa-eye');
+      toggle.querySelector('i')?.classList.toggle('fa-eye-slash');
+      input.focus();
+    });
+  }
+
+  // Validação HTML5 + estado de carregamento
+  const form = document.getElementById('login-form');
+  const btn  = document.getElementById('submitBtn');
+  if (form && btn){
+    form.addEventListener('submit', (e) => {
+      if (!form.checkValidity()){
+        e.preventDefault();
+        e.stopPropagation();
+      } else {
+        // estado "carregando"
+        btn.disabled = true;
+        btn.querySelector('.btn-label')?.classList.add('d-none');
+        btn.querySelector('.btn-loading')?.classList.remove('d-none');
+      }
+      form.classList.add('was-validated');
+    }, false);
+  }
+})();
+</script>
 {% endblock %}

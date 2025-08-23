@@ -103,3 +103,20 @@ html[data-theme="dark"] .btn-gradient{ background:linear-gradient(135deg,#374151
 @media (prefers-reduced-motion: reduce){
   .theme-icon{ transition: none !important; }
 }
+
+/* Avatar redondo com inicial */
+.avatar-circle{
+  display:inline-grid; place-items:center;
+  width:28px; height:28px; border-radius:999px;
+  font: 600 0.8rem/1 system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans";
+  background: var(--surface-2, #f3f6fa);
+  color: var(--text, #1f2937);
+  border: 1px solid var(--border, #e5e7eb);
+}
+
+/* Estado active mais visível no tema claro/escuro */
+.navbar .nav-link.active{
+  font-weight: 600;
+  text-underline-offset: .3rem;
+  text-decoration: underline;
+}

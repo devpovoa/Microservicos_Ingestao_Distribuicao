@@ -1,22 +1,100 @@
 {% extends "base.html" %}
+{% load static %}
 {% block title %}Sessão encerrada · Distribuição{% endblock %}
 
 {% block content %}
 <div class="row justify-content-center">
-  <div class="col-sm-10 col-md-8 col-lg-4">
+  <div class="col-sm-10 col-md-8 col-lg-5 col-xxl-4">
     <div class="auth-card p-4 text-center">
-      <div class="brand-chip mx-auto mb-3"><i class="fa fa-circle-check"></i></div>
-      <h1 class="h5 mb-1">Sessão encerrada</h1>
-      <p class="small text-muted mb-4">Você saiu do sistema com segurança.</p>
+
+      <!-- Ícone/feedback -->
+      <div class="brand-chip mx-auto mb-3" aria-hidden="true">
+        <i class="fa fa-circle-check"></i>
+      </div>
+
+      <h1 class="h5 mb-1">Sessão encerrada com segurança</h1>
+      <p class="small text-muted mb-3">
+        Você saiu do sistema. Por segurança, em computadores compartilhados, feche a janela do navegador.
+      </p>
+
+      <!-- Mensagens do Django (success/info/warning) -->
+      {% if messages %}
+        <div class="mb-2 text-start">
+          {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} py-2 mb-2">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      <!-- Alerta + contagem regressiva -->
+      <div class="alert alert-soft border-0 mb-4">
+        Redirecionando para a tela de login em
+        <strong><span id="logoutCountdown" aria-live="polite">5</span>s</strong>…
+      </div>
+
+      <!-- Ações -->
       <div class="d-grid gap-2">
-        <a class="btn btn-cta btn-pill" href="{% url 'login' %}">
-          <i class="fa fa-right-to-bracket me-2"></i> Entrar novamente
-        </a>
+        {# se houver next, preserva no login #}
+        {% if request.GET.next %}
+          <a id="btnLogin" class="btn btn-cta btn-pill"
+             href="{% url 'login' %}?next={{ request.GET.next|urlencode }}">
+            <i class="fa fa-right-to-bracket me-2"></i> Entrar novamente
+          </a>
+        {% else %}
+          <a id="btnLogin" class="btn btn-cta btn-pill" href="{% url 'login' %}">
+            <i class="fa fa-right-to-bracket me-2"></i> Entrar novamente
+          </a>
+        {% endif %}
+
         <a class="btn btn-soft btn-pill" href="{% url 'dashboard:home' %}">
           Voltar ao site
         </a>
       </div>
+
+      <!-- Dica adicional -->
+      <div class="text-muted small mt-4">
+        Precisa trocar de conta? Clique em <em>Entrar novamente</em>.
+      </div>
     </div>
   </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function(){
+  // Foco inicial para acessibilidade
+  const btn = document.getElementById('btnLogin');
+  btn && btn.focus();
+
+  // Contagem e redirecionamento
+  const el = document.getElementById('logoutCountdown');
+  let s = 5;   // segundos
+  const baseLogin = (function(){
+    // monta a URL de login preservando `next` se existir
+    const params = new URLSearchParams(window.location.search);
+    const next = params.get('next');
+    const loginUrl = new URL("{% url 'login' %}", window.location.origin);
+    if (next) loginUrl.searchParams.set('next', next);
+    return loginUrl.toString();
+  })();
+
+  const tick = () => {
+    if (!el) return;
+    el.textContent = String(s);
+    if (s <= 0) {
+      window.location.assign(baseLogin);
+      return;
+    }
+    s -= 1;
+    setTimeout(tick, 1000);
+  };
+  tick();
+
+  // Evita "voltar" para páginas cacheadas após logout
+  if ('history' in window) {
+    try { history.replaceState(null, document.title, window.location.href); } catch(_) {}
+  }
+})();
+</script>
 {% endblock %}
