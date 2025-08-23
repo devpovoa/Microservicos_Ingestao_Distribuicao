@@ -266,13 +266,11 @@ Essas imagens/GIFs dão clareza sobre o fluxo completo: da ingestão de dados at
 ### 1️⃣ Ingestão via FastAPI
 
 - **Swagger UI** exibindo endpoints protegidos por JWT.  
-  ![](file://wsl.localhost/Ubuntu/mnt/wsl/PHYSICALDRIVE4/Projects/Projetos_Python/Microservico_excel/docs/images/swagger.png.png)
-  ![loading-ag-7782](file://wsl.localhost/Ubuntu/mnt/wsl/PHYSICALDRIVE4/Projects/Projetos_Python/Microservico_excel/docs/images/jwt.png.png)
-
+  ![swagger](/docs/images/swagger.png)
+  ![jwt](/docs/images/jwt.png)
 - Exemplo de ingestão de dados via **JSON externo**.  
-  ![](file://wsl.localhost/Ubuntu/mnt/wsl/PHYSICALDRIVE4/Projects/Projetos_Python/Microservico_excel/docs/images/api_dados.png.png)
-  ![](file://wsl.localhost/Ubuntu/mnt/wsl/PHYSICALDRIVE4/Projects/Projetos_Python/Microservico_excel/docs/images/get_api.png.png)
-
+  ![API Externa](/docs/images/api_dados.png)
+  ![Get API](/docs/images/get_api.png)
 - Upload de arquivo `vendas.xlsx` sendo processado.
   
   
