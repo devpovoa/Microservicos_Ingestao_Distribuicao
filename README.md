@@ -272,8 +272,7 @@ Essas imagens/GIFs dão clareza sobre o fluxo completo: da ingestão de dados at
   ![API Externa](/docs/images/api_dados.png)
   ![Get API](/docs/images/get_api.png)
 - Upload de arquivo `vendas.xlsx` sendo processado.
-  
-  
+  ![Excel](/docs/images/excell.gif)
 
 <!-- Adicione aqui: GIF ou print mostrando envio de JSON -->
 
