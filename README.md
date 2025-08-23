@@ -190,6 +190,7 @@ TZ=America/Sao_Paulo
   ```bash
   invalid spec: :/app/data: empty section between colons
   ```
+
 ---
 
 ### 2️⃣ Subir os serviços
@@ -199,7 +200,7 @@ No terminal, execute:
 ```bash
 docker compose up -d --build
 ```
-
+![Docker-compose](/docs/images/docker-compose.gif)
 Isso vai subir todos os containers: RabbitMQ, Postgres (ingest/distrib), FastAPI, Django e Celery Worker.
 
 ---
@@ -250,6 +251,7 @@ docker compose logs -f django_distrib
 # Logs do worker Celery
 docker compose logs -f celery_worker_distrib
 ```
+
 ---
 
 ## 🎥 Demonstração (Showcase)
@@ -274,21 +276,30 @@ Essas imagens/GIFs dão clareza sobre o fluxo completo: da ingestão de dados at
 
 ### 2️⃣ RabbitMQ em ação
 
-- Painel do RabbitMQ exibindo a fila `processed_data`.  
-- Demonstração de mensagens entrando na fila após ingestão.  
-- Mensagens sendo consumidas pelo worker Celery.
+- Painel do RabbitMQ exibindo a fila `processed_data`.
+  ![RabbitMQ](/docs/images/rabbitmq.png)  
+- Demonstração de mensagens entrando na fila após ingestão com API externa e com o arquivo em excel.
+  ![Productor](/docs/images/mensagem_fila.gif)
+  ---
+  ![Productor](/docs/images/mensagem_fila_excel.gif)
 
 ---
 
 ### 3️⃣ Dashboard Django
 
-- Tela inicial do **dashboard** com KPIs e gráficos.  
-- Exemplo de relatório ou listagem de clientes/compras.  
+- Tela inicial do **dashboard** com KPIs e gráficos. 
+  ![Tela_Login_Dashboard](/docs/images/tela_geral.gif)
+- Mensagens sendo consumidas pelo worker Celery. 
+  ![Consumer_celery](/docs/images/Celery.png)
+  ![Consumer_RabbitMQ](/docs/images/mensagens_consumidas.png)
+- Exemplo de relatório ou listagem de clientes/compras.
+  ![Demonstração_Dados](/docs/images/dados_demonstracao.gif)  
 - Exportação de relatório em **PDF**.
+  ![Extração_Dados](/docs/images/Extracao_PDF.gif)
 
 ---
 
-### 4️⃣ Django Admin
+### 4️⃣ Django Admin (Realizando ajustes)
 
 - Área administrativa para gerenciar clientes, produtos e compras.  
 - Exemplo de CRUD básico (inserção, edição ou listagem).  
@@ -379,5 +390,3 @@ Desenvolvido por **Thiago Povoa**
 Um agradecimento especial ao meu mentor **Ricardo Fernandes** pelo direcionamento técnico, feedbacks francos e suporte contínuo durante essa minha trajetória.  
 
 - 💼 [LinkedIn — José Ricardo Fernandes](https://www.linkedin.com/in/jose-ricardo-fernandes/)
-
-
