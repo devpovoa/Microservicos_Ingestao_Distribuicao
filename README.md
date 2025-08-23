@@ -1,128 +1,319 @@
-# Microserviços de Ingestão e Distribuição de Dados
+# 📊 Microserviços de Ingestão e Distribuição de Dados
 
-## Visão Geral
-
-Este projeto é composto por **dois microserviços independentes** que se comunicam de forma assíncrona via **RabbitMQ** e **Celery**, permitindo um fluxo de ingestão, processamento e distribuição de dados de forma desacoplada e escalável.
-
-* **Microserviço 1 - Ingestão (FastAPI + JWT + SQLAlchemy)**
-  
-  * Monitora uma pasta de arquivos.
-  * Lê arquivos `vendas.xlsx` com **Pandas**.
-  * Aceita também comunicação externa via `JSON` para ingestão de dados via API.
-  * Realiza pré-processamento e persiste os dados em tabelas temporárias (`ClienteTemp`, `CompraTemp`, `ProdutoTemp`) usando **SQLAlchemy**.
-  * Valida os dados e envia mensagens JSON para uma fila RabbitMQ (`processed_data`).
-  * Possui autenticação JWT para controle de acesso.
-
-* **Microserviço 2 - Distribuição (Django) - Em Construção**
-  
-  * Consome as mensagens da fila RabbitMQ.
-  * Persiste os dados de forma definitiva no banco de dados normalizado.
-  * Apresenta dashboards e relatórios por meio de templates HTML.
-  * Não expõe uma API pública, apenas interfaces web administrativas e de visualização.
-
-O projeto é **containerizado com Docker** para garantir portabilidade e fácil deploy.
+![Python](https://img.shields.io/badge/Python-3.11+-blue)
+![FastAPI](https://img.shields.io/badge/FastAPI-API-green)
+![Django](https://img.shields.io/badge/Django-5.0-green)
+![Celery](https://img.shields.io/badge/Celery-Worker-orange)
+![RabbitMQ](https://img.shields.io/badge/RabbitMQ-MQ-red)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-DB-blue)
+![Docker](https://img.shields.io/badge/Docker-Compose-blue)
 
 ---
 
-## Tecnologias Utilizadas
+## 🚀 Sobre o Projeto
 
-* **Linguagem e Frameworks**
-  
-  * [Python 3.11+](https://www.python.org/)
-  * [FastAPI](https://fastapi.tiangolo.com/) para o microserviço de ingestão
-  * [Django 5+](https://www.djangoproject.com/) para o microserviço de distribuição
-  * [Pandas](https://pandas.pydata.org/) para leitura e pré-processamento de arquivos Excel
-  * [SQLAlchemy ORM](https://www.sqlalchemy.org/) para persistência no FastAPI
+Este projeto demonstra a construção de uma **arquitetura moderna baseada em microserviços**, aplicando **boas práticas de desenvolvimento backend**.  
+O sistema é dividido em dois serviços independentes e desacoplados:
 
-* **Mensageria e Processamento Assíncrono**
-  
-  * [RabbitMQ](https://www.rabbitmq.com/) para comunicação assíncrona entre serviços
-  * [Celery](https://docs.celeryq.dev/) para orquestração de tarefas assíncronas
+- **Ingestão (FastAPI + Pandas + SQLAlchemy + JWT)** → processa arquivos e APIs externas, valida dados e envia mensagens para uma fila **RabbitMQ**.  
+- **Distribuição (Django + Celery + PostgreSQL)** → consome as mensagens, persiste em um modelo normalizado e exibe os dados em **dashboards e relatórios interativos**.
 
-* **Banco de Dados**
-  
-  * [PostgreSQL](https://www.postgresql.org/) para persistência temporária e definitiva
-
-* **Ambiente e Deploy**
-  
-  * [Docker](https://www.docker.com/) e Docker Compose para orquestração dos serviços
+⚡ O objetivo é mostrar como aplicar **escalabilidade, resiliência e desacoplamento** em um sistema real, combinando **mensageria assíncrona** com **APIs modernas**.
 
 ---
 
-## Estrutura do Projeto
+## 🏗 Arquitetura
 
-```
-.
-├── docker-compose.yml        # Orquestração dos containers
-├── .env                      # Variáveis de ambiente
-├── micro_ingest/             # Microserviço 1 (FastAPI)
-│   ├── app/
-│   │   ├── api/              # Endpoints REST para validação/testes
-│   │   ├── core/             # Configurações e inicialização do app
-│   │   ├── models/           # Tabelas temporárias (SQLAlchemy)
-│   │   ├── workers/          # File watcher e integração RabbitMQ
-│   │   └── main.py           # Entry point do serviço
-│   └── requirements.txt
-│
-├── micro_distrib/            # Microserviço 2 (Django)
-│   ├── distrib/              # Configurações e apps Django
-│   ├── templates/            # Dashboards e relatórios
-│   └── requirements.txt
-│
-└── README.md                 # Este arquivo
+O sistema é composto por **dois microserviços independentes** que se comunicam via **RabbitMQ**.  
+Cada serviço tem seu próprio banco de dados PostgreSQL e é orquestrado por **Docker Compose**, garantindo isolamento e reprodutibilidade.
+
+### 🔹 Fluxo Resumido
+
+1. O microserviço **Ingestão (FastAPI)**:
+   
+   - Monitora uma pasta de arquivos `vendas.xlsx`.
+   - Faz pré-processamento com **Pandas**.
+   - Persiste dados temporários com **SQLAlchemy**.
+   - Publica mensagens JSON na fila `processed_data` (RabbitMQ).
+   - Oferece **API REST externa** (endpoints protegidos por **JWT**) que também aceita ingestão de dados em formato JSON.
+
+2. O microserviço **Distribuição (Django + Celery)**:
+   
+   - Consome a fila `processed_data` de forma assíncrona.
+   - Normaliza e persiste dados no banco `postgres_distrib`.
+   - Exibe **dashboards e relatórios gerenciais** por meio de templates Django.
+   - Fornece interface administrativa via Django Admin.
+
+### 🔹 Visão Geral (Mermaid)
+
+```mermaid
+flowchart LR
+    A[Excel/JSON via API] --> B(FastAPI Ingestão)
+    B -->|Publica JSON| C[(RabbitMQ)]
+    C --> D[Celery Worker - Django Distribuição]
+    D -->|Normaliza| E[(Postgres Distribuição)]
+    E --> F[Dashboard Django]
 ```
 
 ---
 
-## Fluxo de Funcionamento
+## 🛠 Tecnologias Utilizadas
 
-1. **Ingestão**
-   
-   * O `file_watcher` monitora a pasta `/app/data`.
-   * Quando novos arquivos `vendas.xlsx` são detectados, são lidos com **Pandas**.
-   * Também é possível enviar dados diretamente via requisições JSON autenticadas por JWT.
-   * Os dados são persistidos em tabelas temporárias no `postgres_ingest`.
-   * Após validação, os dados são enviados em formato JSON para a fila `processed_data` no **RabbitMQ**.
+O projeto combina bibliotecas modernas do ecossistema Python para garantir **robustez, segurança e escalabilidade**.  
+Abaixo estão as principais dependências de cada microserviço:
 
-2. **Distribuição**
-   
-   * O microserviço Django consome as mensagens da fila.
-   * Os dados são salvos de forma definitiva no `postgres_distrib`, seguindo o modelo normalizado.
-   * Os dados processados são exibidos por meio de **templates HTML** e visualizações administrativas.
+### 🔹 Microserviço de Ingestão (FastAPI)
+
+| Tecnologia            | Uso no Projeto                                         |
+| --------------------- | ------------------------------------------------------ |
+| **FastAPI**           | Framework principal da API de ingestão                 |
+| **Uvicorn**           | Servidor ASGI para rodar o FastAPI                     |
+| **python-jose**       | Implementação de **JWT** para autenticação             |
+| **pydantic-settings** | Gerenciamento de configurações e variáveis de ambiente |
+| **SQLAlchemy**        | ORM para persistência temporária                       |
+| **psycopg2-binary**   | Driver PostgreSQL                                      |
+| **Pandas**            | Leitura e pré-processamento de arquivos Excel          |
+| **OpenPyXL**          | Suporte a leitura/escrita de arquivos `.xlsx`          |
+| **python-multipart**  | Upload de arquivos                                     |
+| **Celery**            | Publicação de mensagens assíncronas para RabbitMQ      |
+
+
 
 ---
 
-## Monitoramento e Logs
+### 🔹 Microserviço de Distribuição (Django)
 
-* Logs do serviço de ingestão:
+| Tecnologia                                      | Uso no Projeto                               |
+| ----------------------------------------------- | -------------------------------------------- |
+| **Django 5.2.5**                                | Framework principal para web/dashboards      |
+| **asgiref**                                     | Suporte ao ASGI no Django                    |
+| **sqlparse**                                    | Utilitário interno para parsing de SQL       |
+| **python-dotenv**                               | Carregamento de variáveis de ambiente        |
+| **Celery**                                      | Worker para consumo da fila `processed_data` |
+| **psycopg2-binary**                             | Driver PostgreSQL                            |
+| **django-crispy-forms** + **crispy-bootstrap5** | Melhorias visuais em formulários Django      |
+| **ReportLab**                                   | Geração de relatórios em **PDF**             |
+
+---
+
+## ✅ Funcionalidades Principais
+
+### 🔹 Microserviço de Ingestão (FastAPI)
+
+**Ingestão de dados**
+
+- Monitora a pasta de dados (`/app/data`) e processa arquivos `vendas.xlsx`.
+- Aceita **ingestão via API externa** (JSON) para integração com outros sistemas.
+- Validação e pré-processamento com **Pandas** (tipos, normalização, limpeza básica).
+
+**Persistência temporária**
+
+- Armazena dados em tabelas temporárias (`ClienteTemp`, `ProdutoTemp`, `CompraTemp`) via **SQLAlchemy**.
+- Mantém rastreabilidade de registros processados e pendentes.
+
+**Mensageria**
+
+- Publica eventos em formato **JSON** na fila `processed_data` do **RabbitMQ**.
+- Estrutura de mensagem pensada para **idempotência** (campos de referência/identificadores consistentes).
+
+**Segurança**
+
+- **JWT** para proteger endpoints de ingestão externa.
+- Configurações via **pydantic-settings** e variáveis de ambiente.
+
+**Operação**
+
+- Documentação interativa via **Swagger** em `/docs` (porta `8001`).
+- Logs focados em eventos de ingestão, validação e publicação.
+
+---
+
+### 🔹 Microserviço de Distribuição (Django + Celery)
+
+**Consumo assíncrono**
+
+- **Celery Worker** escuta a fila `processed_data` e processa eventos de forma paralela.
+- Estratégia de **upsert**/**normalização** para evitar duplicidades.
+
+**Persistência definitiva**
+
+- Gravação em modelos normalizados no `postgres_distrib` (clientes, produtos, compras, endereços, etc.).
+- Integridade relacional garantida (FKs, índices e regras de consistência).
+
+**Visualização e análise**
+
+- **Dashboard gerencial** com KPIs e gráficos.
+- Listagens, filtros e **relatórios** (inclui geração de **PDF** com ReportLab).
+- Interface **Django Admin** para gestão operacional.
+
+**Operação**
+
+- Aplicação web servindo em `http://localhost:8002`.
+- Logs do worker e do web app separados para facilitar troubleshooting.
+
+---
+
+### 🔁 Funcionalidades Transversais
+
+- **Docker Compose** para orquestração dos serviços, bancos e mensageria.
+- **Healthchecks** em Postgres e RabbitMQ para garantir ordem de inicialização.
+- **Variáveis de ambiente** (`.env`) para credenciais e caminhos (ex.: `HOST_DATA_PATH`).
+- **Escalabilidade horizontal** simples (replicar workers Celery para aumentar throughput).
+
+---
+
+## 🚀 Como Rodar
+
+Antes de iniciar, garanta que você tem **Docker** e **Docker Compose** instalados no ambiente.
+
+### 1️⃣ Configurar variáveis de ambiente
+
+Crie um arquivo `.env` na raiz do projeto, no mesmo nível do `docker-compose.yml`:
+
+```env
+# RabbitMQ
+RABBITMQ_USER=guest
+RABBITMQ_PASS=guest
+RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672/
+
+# Caminho absoluto no host para os arquivos de ingestão
+HOST_DATA_PATH=/ABSOLUTE/PATH/TO/data
+
+# Fuso horário (opcional)
+TZ=America/Sao_Paulo
+```
+
+⚠️ **Importante**:
+
+* `HOST_DATA_PATH` deve ser um caminho absoluto válido no seu computador (por exemplo, `/home/thiago/data`).
+
+* Caso contrário, o Docker pode retornar erro:
   
   ```bash
-  docker logs -f fastapi_ingest
+  invalid spec: :/app/data: empty section between colons
   ```
-
-* Logs do serviço de distribuição:
-  
-  ```bash
-  docker logs -f django_distrib
-  ```
-
-* Verificar se RabbitMQ recebeu mensagens:
-  
-  * Acesse o painel de administração (`http://localhost:15672/`)
-  * Veja a fila `processed_data`
 
 ---
 
-## Próximos Passos
+### 2️⃣ Subir os serviços
 
-* Implementar testes automatizados para os microserviços
-* Criar visualizações mais avançadas no Django
-* Adicionar autenticação JWT no FastAPI
-* Configurar CI/CD para deploy automatizado
+No terminal, execute:
+
+```bash
+docker compose up -d --build
+```
+
+Isso vai subir todos os containers: RabbitMQ, Postgres (ingest/distrib), FastAPI, Django e Celery Worker.
 
 ---
 
-## Licença & Autoria
+### 3️⃣ Acessos rápidos
 
-📄 Este material é de autoria de **[Thiago Povoa](https://github.com/devpovoa)** e pode ser utilizado livremente para fins de estudo.  
-Caso utilize em outro projeto, mantenha a referência ao autor.  
+* **RabbitMQ Management UI** → [http://localhost:15672](http://localhost:15672)  
+  _Usuário/senha definidos no `.env`._
+
+* **FastAPI Ingestão** → [http://localhost:8001](http://localhost:8001)
+  
+  * Documentação Swagger: [Serviço de Ingestão de Dados - Swagger UI](http://localhost:8001/docs)
+
+* **Django Distribuição** → [http://localhost:8002](http://localhost:8002)
+  
+  * Admin: [Acessar | Site de administração do Django](http://localhost:8002/admin)
+
+---
+
+### 4️⃣ Configurações iniciais do Django
+
+Após subir os serviços pela primeira vez, rode:
+
+```bash
+# Aplicar migrações
+docker compose exec django_distrib python manage.py migrate
+
+# Criar superusuário
+docker compose exec django_distrib python manage.py createsuperuser
+
+```
+
+Agora você já pode acessar o **Django Admin** e começar a gerenciar os dados processados.
+
+---
+
+### 5️⃣ Logs úteis
+
+Para acompanhar o funcionamento em tempo real:
+
+```bash
+# Logs do serviço de ingestão (FastAPI)
+docker compose logs -f fastapi_ingest
+
+# Logs do serviço de distribuição (Django)
+docker compose logs -f django_distrib
+
+# Logs do worker Celery
+docker compose logs -f celery_worker_distrib
+```
+
+---
+
+## 🎥 Demonstração (Showcase)
+
+A seguir estão exemplos visuais que mostram o sistema em funcionamento.  
+Essas imagens/GIFs dão clareza sobre o fluxo completo: da ingestão de dados até a visualização final no dashboard.
+
+---
+
+### 1️⃣ Ingestão via FastAPI
+
+- **Swagger UI** exibindo endpoints protegidos por JWT.  
+  ![b5537f6e-0097-438f-b898-b7de7b76432b](file:///C:/Users/Thiago%20Povoa/OneDrive/Imagens/Typedown/b5537f6e-0097-438f-b898-b7de7b76432b.png)
+  ![edd67570-d96b-4d9a-9d0e-a69731d54834](file:///C:/Users/Thiago%20Povoa/OneDrive/Imagens/Typedown/edd67570-d96b-4d9a-9d0e-a69731d54834.png)
+
+- Exemplo de ingestão de dados via **JSON externo**.  
+  ![7519a8e9-d291-433f-a213-f0612be9957a](file:///C:/Users/Thiago%20Povoa/OneDrive/Imagens/Typedown/7519a8e9-d291-433f-a213-f0612be9957a.png)
+  ![fff29710-f791-440a-9771-7e91c172c56e](file:///C:/Users/Thiago%20Povoa/OneDrive/Imagens/Typedown/fff29710-f791-440a-9771-7e91c172c56e.png)
+
+- Upload de arquivo `vendas.xlsx` sendo processado.
+  
+  
+
+<!-- Adicione aqui: GIF ou print mostrando envio de JSON -->
+
+<!-- Adicione aqui: GIF ou print mostrando upload do Excel -->
+
+---
+
+### 2️⃣ RabbitMQ em ação
+
+- Painel do RabbitMQ exibindo a fila `processed_data`.  
+- Demonstração de mensagens entrando na fila após ingestão.  
+- Mensagens sendo consumidas pelo worker Celery.
+
+<!-- Adicione aqui: print da fila `processed_data` cheia -->
+
+<!-- Adicione aqui: GIF rápido mostrando mensagens entrando e sumindo -->
+
+---
+
+### 3️⃣ Dashboard Django
+
+- Tela inicial do **dashboard** com KPIs e gráficos.  
+- Exemplo de relatório ou listagem de clientes/compras.  
+- Exportação de relatório em **PDF**.
+
+<!-- Adicione aqui: print do dashboard principal -->
+
+<!-- Adicione aqui: GIF mostrando interação com filtros -->
+
+<!-- Adicione aqui: print ou GIF mostrando exportação de PDF -->
+
+---
+
+### 4️⃣ Django Admin
+
+- Área administrativa para gerenciar clientes, produtos e compras.  
+- Exemplo de CRUD básico (inserção, edição ou listagem).  
+
+<!-- Adicione aqui: print do Django Admin -->
+
+<!-- Adicione aqui: print mostrando edição de cliente/produto -->
