@@ -77,8 +77,6 @@ Abaixo estão as principais dependências de cada microserviço:
 | **python-multipart**  | Upload de arquivos                                     |
 | **Celery**            | Publicação de mensagens assíncronas para RabbitMQ      |
 
-
-
 ---
 
 ### 🔹 Microserviço de Distribuição (Django)
@@ -192,7 +190,6 @@ TZ=America/Sao_Paulo
   ```bash
   invalid spec: :/app/data: empty section between colons
   ```
-
 ---
 
 ### 2️⃣ Subir os serviços
@@ -253,7 +250,6 @@ docker compose logs -f django_distrib
 # Logs do worker Celery
 docker compose logs -f celery_worker_distrib
 ```
-
 ---
 
 ## 🎥 Demonstração (Showcase)
@@ -274,10 +270,6 @@ Essas imagens/GIFs dão clareza sobre o fluxo completo: da ingestão de dados at
 - Upload de arquivo `vendas.xlsx` sendo processado.
   ![Excel](/docs/images/excell.gif)
 
-<!-- Adicione aqui: GIF ou print mostrando envio de JSON -->
-
-<!-- Adicione aqui: GIF ou print mostrando upload do Excel -->
-
 ---
 
 ### 2️⃣ RabbitMQ em ação
@@ -286,10 +278,6 @@ Essas imagens/GIFs dão clareza sobre o fluxo completo: da ingestão de dados at
 - Demonstração de mensagens entrando na fila após ingestão.  
 - Mensagens sendo consumidas pelo worker Celery.
 
-<!-- Adicione aqui: print da fila `processed_data` cheia -->
-
-<!-- Adicione aqui: GIF rápido mostrando mensagens entrando e sumindo -->
-
 ---
 
 ### 3️⃣ Dashboard Django
@@ -297,12 +285,6 @@ Essas imagens/GIFs dão clareza sobre o fluxo completo: da ingestão de dados at
 - Tela inicial do **dashboard** com KPIs e gráficos.  
 - Exemplo de relatório ou listagem de clientes/compras.  
 - Exportação de relatório em **PDF**.
-
-<!-- Adicione aqui: print do dashboard principal -->
-
-<!-- Adicione aqui: GIF mostrando interação com filtros -->
-
-<!-- Adicione aqui: print ou GIF mostrando exportação de PDF -->
 
 ---
 
@@ -375,7 +357,6 @@ Use o formato:
 
 ---
 
----
 ## 📄 Licença
 
 Este projeto está licenciado sob a licença **MIT** – veja o arquivo [LICENSE](LICENSE) para mais detalhes.  
